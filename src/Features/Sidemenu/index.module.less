@@ -1,0 +1,80 @@
+/**************************** Sider menu *******************************/
+
+@import '~antd/es/style/themes/default.less';
+
+
+.siderMenu{
+  background-color: #2e2e2e;
+  :global(.ant-layout-sider-children){
+    overflow: auto ;
+    box-shadow: 0 2px 4px rgb(15 34 58 / 12%);
+  }
+
+  //Sider menu logo
+  .sideMenuLogo{
+    padding-top: 28px;
+    height: 88px;
+    display: flex;
+    justify-content: center;
+  }
+
+  //Nav tabs
+  .navTabs{
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  //Menu - menu item
+  .menu:global(.ant-menu) {
+    border-right: none;
+    margin: 6px 5px;
+    color:#878a92;
+    background-color: #2e2e2e;
+    font-weight: 500px;
+
+    :global(.ant-menu-item){
+      padding: 0 calc(50% - 24px / 2);
+      line-height: 64px;
+      height: 64px;
+      border-radius: 8px;
+    }
+    :global(.ant-menu-item):active{
+      background-color: #2e2e2e;
+    }
+    :global(.ant-menu-item-selected){
+      background-color: #2e2e2e;
+    }
+
+  }
+
+
+}
+
+  //popver
+.popoverSideMenu:global(.ant-popover){
+    left: 12px;
+    width: 170px;
+}
+
+
+.menuSetting{
+ border-radius:8px;
+ :global(.ant-dropdown-menu-item){
+   min-width: 160px;
+ }
+}
+
+// setting
+// .settingButton:global(.ant-menu-item){
+//   color:rgba(0, 0, 0, 0.85);
+//   &:focus{
+//     color: #7269ef;
+//   }
+// }
+
+// .settingButton:global(.ant-menu-item-selected){
+//   color: #7269ef;
+// }
+
