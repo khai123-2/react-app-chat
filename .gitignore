@@ -24,7 +24,4 @@ yarn-error.log*
 
 
 # firebase hosting
-.firebaserc
-firebase.json
-/.firebase
-/emulators
+/emulators/*.log
