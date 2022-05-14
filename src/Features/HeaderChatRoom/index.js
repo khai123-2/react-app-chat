@@ -1,15 +1,13 @@
 import React from "react";
 import styles from "./index.module.less";
-import { Avatar, Button, Tooltip, Badge } from "antd";
+import { Avatar, Button, Tooltip } from "antd";
 import {
   SearchOutlined,
   UserAddOutlined,
   InfoCircleOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { useSelector } from "react-redux";
-import { selectedRoomIdSelector } from "../../redux/selectors";
-import useFirestore from "../../Hooks/useFirestore";
+
 const HeaderChatRoom = ({ selectedRoom, members }) => {
   // console.log(selectedRoom);
   return (
