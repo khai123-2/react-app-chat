@@ -1,41 +1,38 @@
+.header-infor {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
-.headerInfor{
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-       
-        .title{
-            margin-left: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+  .title {
+    margin-left: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
-            .name{
-                font-size: 18px;
-                font-weight: 600;
-                margin-bottom: 6px;
-            }
-        }
+    .name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+  }
 }
 
-.buttonGroup{
-        :global(.ant-btn ){
-            margin-right: 6px;
-            border-radius: 4px;
-            :global( .anticon){
-                font-size: 20px;
-            }
+.button-group {
+  :global(.ant-btn) {
+    margin-right: 6px;
+    border-radius: 4px;
+    :global(.anticon) {
+      font-size: 20px;
+    }
+  }
+  :global(.ant-btn):hover {
+    background-color: #f3f0ff;
+  }
+  :global(.ant-btn):focus {
+    background-color: #f3f0ff;
 
-        }
-        :global(.ant-btn ):hover{
-            background-color: #f3f0ff;
-        }
-        :global(.ant-btn ):focus{
-             background-color: #f3f0ff;
-
-            :global(.anticon ){
-                color:#7269ef ;
-            }
-        }
+    :global(.anticon) {
+      color: #7269ef;
+    }
+  }
 }
-

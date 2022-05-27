@@ -1,6 +1,6 @@
 import { db } from "./config";
 import {
-  serverTimestamp,
+  Timestamp,
   collection,
   addDoc,
   updateDoc,
@@ -16,14 +16,14 @@ import {
 export const addDocument = async (collectionName, data) => {
   await addDoc(collection(db, collectionName), {
     ...data,
-    createAt: serverTimestamp(),
+    createdAt: Timestamp.fromDate(new Date()),
   });
 };
 
 export const updateDocument = async (collectionName, data, id) => {
   await updateDoc(doc(db, collectionName, id), {
     ...data,
-    createAt: serverTimestamp(),
+    createdAt: Timestamp.fromDate(new Date()),
   });
 };
 
@@ -35,10 +35,10 @@ export const getDocuments = async (collectionName, condition) => {
     q = query(
       docsRef,
       where(condition.fieldName, condition.operator, condition.compareValue),
-      orderBy("createAt")
+      orderBy("createdAt")
     );
   } else {
-    q = query(docsRef, orderBy("createAt"));
+    q = query(docsRef, orderBy("createdAt"));
   }
   const querySnapshot = await getDocs(q);
   const data = querySnapshot.docs.map((doc) => {
@@ -51,7 +51,7 @@ export const setDocument = async (collectionName, data, docId) => {
   await setDoc(doc(db, collectionName, docId), {
     ...data,
     id: docId,
-    createAt: serverTimestamp(),
+    createdAt: Timestamp.fromDate(new Date()),
   });
 };
 

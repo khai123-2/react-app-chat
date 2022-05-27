@@ -9,7 +9,6 @@ import {
 } from "firebase/firestore";
 const useFirestore = (collectionTable, condition) => {
   const [documents, setDocuments] = useState([]);
-
   React.useEffect(() => {
     const usersCollectionRef = collection(db, collectionTable);
     let q;
@@ -21,10 +20,10 @@ const useFirestore = (collectionTable, condition) => {
       q = query(
         usersCollectionRef,
         where(condition.fieldName, condition.operator, condition.compareValue),
-        orderBy("createAt")
+        orderBy("createdAt")
       );
     } else {
-      q = query(usersCollectionRef, orderBy("createAt"));
+      q = query(usersCollectionRef, orderBy("createdAt"));
     }
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const documents = querySnapshot.docs.map((doc) => {

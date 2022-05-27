@@ -3,7 +3,6 @@ import { Modal, Form, Input, Alert } from "antd";
 import { isInviteUserVisibleSelector } from "../../redux/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import modalReducer from "./ModalReducer";
-import { v4 as uuidv4 } from "uuid";
 import { setDocument, getDocuments } from "../../firebase/service";
 import { AuthContext } from "../../Context/AuthProvider";
 
@@ -30,14 +29,18 @@ const InviteUsersModal = () => {
         });
 
         if (data.length > 0 && data[0].uid !== currentUserId) {
+          const receiveUserId = data[0].uid;
+          const id =
+            currentUserId > receiveUserId
+              ? `${currentUserId + receiveUserId}`
+              : `${receiveUserId + currentUserId}`;
           await setDocument(
-            "conversations",
+            "requests",
             {
-              members: [currentUserId, data[0].uid],
-              isFriend: false,
-              receiveId: data[0].uid,
+              from: currentUserId,
+              to: receiveUserId,
             },
-            uuidv4()
+            id
           );
           setIsUserExists(true);
           form.resetFields();

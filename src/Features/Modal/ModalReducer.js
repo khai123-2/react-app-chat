@@ -5,6 +5,8 @@ const modalReducer = createSlice({
   initialState: {
     isInviteUserVisible: false,
     isAddroomVisible: false,
+    isEditProfileVisible: false,
+    changeImg: "",
   },
   reducers: {
     setIsInviteUserVisible: (state, action) => {
@@ -12,6 +14,12 @@ const modalReducer = createSlice({
     },
     setIsAddroomVisible: (state, action) => {
       state.isAddroomVisible = action.payload;
+    },
+    setIsEditProfileVisible: (state, action) => {
+      state.isEditProfileVisible = action.payload;
+    },
+    setChangeImg: (state, action) => {
+      state.changeImg = action.payload;
     },
   },
 });

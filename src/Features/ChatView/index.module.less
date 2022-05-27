@@ -1,58 +1,74 @@
+.main-chat {
+  height: 100vh;
+  border-right: 1px solid rgb(230, 230, 230);
+  overflow: auto;
+  //Header
 
-.messagePage{
-    background-image: url("https://doot-light.react.themesbrand.com/static/media/pattern-05.ffd181cd.png");
-    height: 100%;
-    overflow-y: auto;
-    background-color: #f2f2f2;
-    .messageView{
-        padding: 0 16px 12px 16px;
-    }
-    
-}
-
-
-
-.ztoolbar{
-    padding: 0 0 0 22px;
-    height: 46px;
-    display: flex;
-    align-items: center;
-    border-top: 1px solid rgb(230, 230, 230);
-    :global(.ant-btn){
-        margin-right: 8px;
-        :global(.anticon){
-            font-size: 24px;
-        }
-    }
-    :global(.ant-btn ):hover{
-        background-color: #f3f0ff;
-    }
-    :global(.ant-btn ):focus{
-         background-color: #f3f0ff;
-
-        
-    }
-}
-
-
-.formCustom{
+  .header-chat {
     display: flex;
     justify-content: space-between;
+    height: 68px;
     align-items: center;
-    padding: 12px 16px 12px 16px;
-    border: 1px solid rgb(230, 230, 230);
-    border-radius: 2px;
+    padding: 0px 16px;
+    border-bottom: 1px solid rgb(230, 230, 230);
+    background-color: #f2f2f2;
+  }
 
-    :global(.ant-form-item){
+  // Chat View
+  .chat-view {
+    height: calc(100vh - 68px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .messages-page {
+      background-image: url("https://doot-light.react.themesbrand.com/static/media/pattern-05.ffd181cd.png");
+      height: 100%;
+      overflow-y: auto;
+      background-color: #f2f2f2;
+      .messages-view {
+        padding: 0 16px 12px 16px;
+      }
+    }
+
+    .ztoolbar {
+      padding: 0 0 0 22px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      border-top: 1px solid rgb(230, 230, 230);
+      :global(.ant-btn) {
+        margin-right: 8px;
+        :global(.anticon) {
+          font-size: 24px;
+        }
+      }
+      :global(.ant-btn):hover {
+        background-color: #f3f0ff;
+      }
+      :global(.ant-btn):focus {
+        background-color: #f3f0ff;
+      }
+    }
+
+    .form-custom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px 12px 16px;
+      border: 1px solid rgb(230, 230, 230);
+      border-radius: 2px;
+
+      :global(.ant-form-item) {
         flex: 1;
         margin-bottom: 0;
-    }
-    :global(.ant-btn){
-       margin: 0 10px;
-        :global(.anticon){
-            font-size: 24px;
-            
+      }
+      :global(.ant-btn) {
+        margin: 0 10px;
+        :global(.anticon) {
+          font-size: 24px;
         }
+      }
     }
+  }
 }
-

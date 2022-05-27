@@ -1,33 +1,31 @@
 /**************************** Sider menu *******************************/
 
-@import '~antd/es/style/themes/default.less';
-
-
-
+@import "~antd/es/style/themes/default.less";
 
 /**************************** Right Chat *******************************/
 
-.rightChat{
-    box-shadow: 0 2px 4px rgb(15 34 58 / 12%);
-    height: 100vh;
-    min-width: 304px;
+.contact-search {
+  height: 64px;
+  min-height: 64px;
+  display: flex;
+  margin: 0 16px;
+  align-items: center;
+  .search-box {
+    width: calc(100% - 53px);
+  }
+
+  button {
+    margin-left: 4px;
+  }
 }
 
-.contactSearch{
-    height: 64px;
-    display: flex;
-    justify-content: center;
-    
+.content {
+  height: calc(100vh - 64px);
+  overflow: hidden;
 }
 
-.content{
-    height: calc(100vh - 64px);
-    overflow: hidden;
-}
-
-
-.panelCustom{
-  :global(.ant-collapse-content .ant-collapse-content-box){
+.panelCustom {
+  :global(.ant-collapse-content .ant-collapse-content-box) {
     padding: 0;
   }
 }

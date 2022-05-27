@@ -2,56 +2,49 @@ import React, { useContext } from "react";
 import { List, Avatar, Button } from "antd";
 import styles from "./index.module.less";
 import VirtualList from "rc-virtual-list";
-import {
-  getDocuments,
-  updateDocument,
-  deleteDocument,
-} from "../../firebase/service";
+import { updateDocument, deleteDocument } from "../../firebase/service";
+import { arrayUnion } from "firebase/firestore";
 import { AuthContext } from "../../Context/AuthProvider";
-const FriendRequestBox = ({ listRequest }) => {
+const FriendRequestBox = ({ userSendRequest }) => {
   const { user } = useContext(AuthContext);
-  const getConversationById = async (id) => {
-    const conversations = await getDocuments("conversations", {
-      fieldName: "members",
-      operator: "array-contains",
-      compareValue: id,
-    });
-
-    return conversations;
-  };
 
   //Delete
 
-  const handleReject = async (friendId) => {
-    const conversations = await getConversationById(friendId);
-    const selectedConversation = conversations.find(myfilter);
-    function myfilter(item) {
-      return item.members.includes(friendId) && item.members.includes(user.uid);
-    }
-
-    await deleteDocument("conversations", selectedConversation.id);
+  const handleReject = async (requestUserId) => {
+    const id =
+      user.uid > requestUserId
+        ? `${user.uid + requestUserId}`
+        : `${requestUserId + user.uid}`;
+    await deleteDocument("requests", id);
   };
 
   //Update
-  const handleAccept = async (friendId) => {
-    const conversations = await getConversationById(friendId);
-    const selectedConversation = conversations.find(myfilter);
-    function myfilter(item) {
-      return item.members.includes(friendId) && item.members.includes(user.uid);
-    }
+  const handleAccept = async (requestUserId) => {
+    const id =
+      user.uid > requestUserId
+        ? `${user.uid + requestUserId}`
+        : `${requestUserId + user.uid}`;
     await updateDocument(
-      "conversations",
+      "users",
       {
-        isFriend: true,
+        listFriend: arrayUnion(`${user.uid}`),
       },
-      selectedConversation.id
+      requestUserId
     );
+    await updateDocument(
+      "users",
+      {
+        listFriend: arrayUnion(`${requestUserId}`),
+      },
+      user.uid
+    );
+    await deleteDocument("requests", id);
   };
   return (
     <div>
       <List>
         <VirtualList
-          data={listRequest}
+          data={userSendRequest}
           height={400}
           itemHeight={47}
           itemKey="email"
@@ -80,7 +73,13 @@ const FriendRequestBox = ({ listRequest }) => {
             >
               <List.Item.Meta
                 className={styles.customAvatar}
-                avatar={<Avatar size={48} src={item.photoURL} />}
+                avatar={
+                  <Avatar size={48} src={item.photoURL}>
+                    {item?.photoURL
+                      ? ""
+                      : item?.displayName?.charAt(0)?.toUpperCase()}{" "}
+                  </Avatar>
+                }
                 title={item.displayName}
                 style={{
                   padding: "12px 16px",

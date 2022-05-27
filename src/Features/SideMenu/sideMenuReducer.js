@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 const sideMenuReducer = createSlice({
   name: "sideMenu",
   initialState: {
-    keyItem: "chats",
+    tab: "chats",
   },
   reducers: {
-    selectedItem: (state, action) => {
-      state.keyItem = action.payload;
+    selectedtab: (state, action) => {
+      state.tab = action.payload;
     },
   },
 });

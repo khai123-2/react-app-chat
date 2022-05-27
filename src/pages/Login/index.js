@@ -6,7 +6,7 @@ import {
   FacebookAuthProvider,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import { addDocument } from "../../firebase/service";
+import { setDocument } from "../../firebase/service";
 
 const fbProvider = new FacebookAuthProvider();
 const Login = () => {
@@ -15,13 +15,18 @@ const Login = () => {
     const { user } = data;
     const additionalUserInfo = getAdditionalUserInfo(data);
     if (additionalUserInfo?.isNewUser) {
-      await addDocument("users", {
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        uid: user.uid,
-        providerId: additionalUserInfo.providerId,
-      });
+      await setDocument(
+        "users",
+        {
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          uid: user.uid,
+          providerId: additionalUserInfo.providerId,
+          listFriend: [],
+        },
+        user.uid
+      );
     }
   };
   // auth.onAuthStateChanged((user) => {

@@ -1,158 +1,82 @@
-import React, { useContext } from "react";
-import { List, Avatar, Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import styles from "./index.module.less";
-import { useSelector, useDispatch } from "react-redux";
-import { FriendsIdSelector } from "../../redux/selectors";
+import React, { useContext, useState } from "react";
+import { List } from "antd";
 import useFirestore from "../../Hooks/useFirestore";
-import chatListReducer from "./chatListReducer";
-import { getDocuments } from "../../firebase/service";
 import { AuthContext } from "../../Context/AuthProvider";
-import modalReducer from "../Modal/ModalReducer";
-//
+import ChatItem from "../ChatItem";
+import { useDispatch } from "react-redux";
+import chatItemReducer from "../ChatItem/chatItemReducer";
+import { updateDoc, getDoc, doc } from "firebase/firestore";
+import { db } from "../../firebase/config";
 const ListMessages = () => {
-  const { user } = useContext(AuthContext);
   const dispatch = useDispatch();
-  const listFriendId = useSelector(FriendsIdSelector);
-
-  const getConversationById = async (id) => {
-    const conversations = await getDocuments("conversations", {
-      fieldName: "members",
-      operator: "array-contains",
-      compareValue: id,
-    });
-
-    return conversations;
-  };
-
-  const handleSeletecdConvers = async (friendId) => {
-    dispatch(chatListReducer.actions.setSelectedRoomId(""));
-    const conversations = await getConversationById(friendId);
-    const selectedConversation = conversations.find(myfilter);
-    function myfilter(item) {
-      return item.members.includes(friendId) && item.members.includes(user.uid);
-    }
-
-    //dispatch
-    dispatch(chatListReducer.actions.selectedConver(selectedConversation));
-    dispatch(chatListReducer.actions.selectedFriendId(friendId));
-  };
-  const membersCondition = React.useMemo(() => {
+  const { user } = useContext(AuthContext);
+  const [conversation, setConversation] = useState("");
+  const currentUserCondition = React.useMemo(() => {
     return {
-      fieldName: "uid",
-      operator: "in",
-      compareValue: listFriendId,
+      fieldName: "listFriend",
+      operator: "array-contains",
+      compareValue: user.uid,
     };
-  }, [listFriendId]);
-
-  const roomCondition = React.useMemo(() => {
+  }, [user.uid]);
+  const roomsCondition = React.useMemo(() => {
     return {
       fieldName: "members",
       operator: "array-contains",
       compareValue: user.uid,
     };
   }, [user.uid]);
+  const listFriend = useFirestore("users", currentUserCondition);
+  const listRoom = useFirestore("rooms", roomsCondition);
+  const listConversations = listFriend.concat(listRoom);
 
-  // get chat list friend
-  const listChat = useFirestore("users", membersCondition);
-  // get chat list friend
-  const listRoom = useFirestore("rooms", roomCondition);
-
-  const handleAddfriend = () => {
-    dispatch(modalReducer.actions.setIsInviteUserVisible(true));
+  const sort = async () => {
+    await listConversations.sort((x, y) => {
+      return y.createdAt.seconds - x.createdAt.seconds;
+    });
   };
-  const handleAddRoom = () => {
-    dispatch(modalReducer.actions.setIsAddroomVisible(true));
-  };
+  sort();
 
-  const handleSeletecdRoom = (roomId) => {
-    dispatch(chatListReducer.actions.setSelectedRoomId(roomId));
+  const handleSelectedUser = async (conversation) => {
+    setConversation(conversation);
+    if (conversation.uid) {
+      const id =
+        user.uid > conversation.uid
+          ? `${user.uid + conversation.uid}`
+          : `${conversation.uid + user.uid}`;
+      // get last message b/w logged in user and selected user
+      const docSnap = await getDoc(doc(db, "lastMsg", id));
+      // if last message exists and message is from selected user
+      if (docSnap.data() && docSnap.data().from !== user.uid) {
+        // update last message doc, set unread to false
+        await updateDoc(doc(db, "lastMsg", id), { unread: false });
+      }
+    }
+    if (conversation.roomId) {
+      // get last message b/w logged in user and selected user
+      const docSnap = await getDoc(doc(db, "lastMsg", conversation.roomId));
+      // if last message exists and message is from selected user
+      if (docSnap.data() && docSnap.data().from !== user.uid) {
+        // update last message doc, set unread to false
+        await updateDoc(doc(db, "lastMsg", conversation.roomId), {
+          unread: false,
+        });
+      }
+    }
+    dispatch(chatItemReducer.actions.selectedConversation(conversation));
   };
   return (
-    <div>
-      <div>
-        <List
-          itemLayout="horizontal"
-          dataSource={listChat}
-          header={
-            <div className={styles.headerChatList}>
-              <h4>DIRECT MESSAGES</h4>{" "}
-              <Button
-                type="ghost"
-                onClick={handleAddfriend}
-                icon={<PlusOutlined />}
-                size="small"
-              />
-            </div>
-          }
-          renderItem={(user) => (
-            <List.Item
-              key={user.email}
-              style={{ padding: "0", height: "40", borderBottom: "0" }}
-              className={styles.customListItem}
-              onClick={() => handleSeletecdConvers(user.uid)}
-            >
-              <List.Item.Meta
-                className={styles.customAvatar}
-                avatar={
-                  <Avatar size={29} src={user.photoURL}>
-                    {user.photoURL
-                      ? ""
-                      : user.displayName?.charAt(0)?.toUpperCase()}{" "}
-                  </Avatar>
-                }
-                title={user.displayName}
-                style={{
-                  padding: "5px 24px",
-                  alignItems: "center",
-                }}
-              />
-            </List.Item>
-          )}
-        />
-      </div>
-      <div>
-        <List
-          itemLayout="horizontal"
-          dataSource={listRoom}
-          header={
-            <div className={styles.headerChatList}>
-              <h4>CHANNELS</h4>{" "}
-              <Button
-                type="ghost"
-                onClick={handleAddRoom}
-                icon={<PlusOutlined />}
-                size="small"
-              />
-            </div>
-          }
-          renderItem={(room) => (
-            <List.Item
-              key={room.id}
-              style={{ padding: "0", height: "40", borderBottom: "0" }}
-              className={styles.customListItem}
-              onClick={() => handleSeletecdRoom(room.id)}
-            >
-              <List.Item.Meta
-                className={styles.customAvatar}
-                avatar={
-                  <Avatar size={29} src={room.photoURL}>
-                    {room.photoURL
-                      ? ""
-                      : room.roomName?.charAt(0)?.toUpperCase()}{" "}
-                  </Avatar>
-                }
-                title={room.roomName}
-                style={{
-                  padding: "5px 24px",
-                  alignItems: "center",
-                }}
-              />
-            </List.Item>
-          )}
-        />
-      </div>
-    </div>
+    <List
+      dataSource={listConversations}
+      renderItem={(item) => (
+        <List.Item style={{ padding: "0", borderBottom: "0" }}>
+          <ChatItem
+            data={item}
+            handleSelectedUser={handleSelectedUser}
+            conversation={conversation}
+          />
+        </List.Item>
+      )}
+    />
   );
 };
 

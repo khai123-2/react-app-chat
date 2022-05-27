@@ -1,0 +1,72 @@
+.nav_tabs_user {
+  padding-top: 32px;
+  height: 88px;
+  display: flex;
+  justify-content: center;
+}
+
+.nav_tabs_top {
+  .tablist {
+    width: 100%;
+
+    .leftbar-tab {
+      width: 100%;
+      height: 64px;
+      font-size: 24px;
+      color: #fff;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .leftbar-tab:hover {
+      cursor: pointer;
+      background-color: #72abff;
+    }
+    #active {
+      background-color: #006edc;
+    }
+  }
+}
+
+.nav_tabs_bottom {
+  margin-bottom: 10px;
+  .tablist {
+    width: 100%;
+    .leftbar-tab {
+      width: 100%;
+      height: 64px;
+      font-size: 24px;
+      color: #fff;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .leftbar-tab:hover {
+      cursor: pointer;
+      background-color: #72abff;
+    }
+    #active {
+      background-color: #006edc;
+    }
+
+    #settingsTab:focus {
+      background-color: #006edc;
+    }
+  }
+}
+
+.setting-items {
+  border-radius: 8px;
+  margin-left: 6px;
+  :global(.ant-dropdown-menu-item) {
+    min-width: 160px;
+
+    :global(.ant-dropdown-menu-title-content) {
+      p {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
