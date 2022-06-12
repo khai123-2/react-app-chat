@@ -18,7 +18,7 @@ const HeaderChat = ({ user }) => {
         <div>
           <Badge
             dot
-            color="green"
+            color={user.isOnline ? "green" : "yellow"}
             offset={[-8, 43]}
             style={{ width: "10px", height: "10px" }}
           >
@@ -29,7 +29,7 @@ const HeaderChat = ({ user }) => {
         </div>
         <div className={cx("title")}>
           <p className={cx("name")}>{user.displayName}</p>
-          <span style={{ fontSize: "12px" }}>Active</span>
+          <span style={{ fontSize: "12px" }}></span>
         </div>
       </div>
       <div className={cx("button-group")}>
@@ -50,4 +50,4 @@ const HeaderChat = ({ user }) => {
   );
 };
 
-export default HeaderChat;
+export default React.memo(HeaderChat);

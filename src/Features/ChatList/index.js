@@ -3,14 +3,16 @@ import { List } from "antd";
 import useFirestore from "../../Hooks/useFirestore";
 import { AuthContext } from "../../Context/AuthProvider";
 import ChatItem from "../ChatItem";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import chatItemReducer from "../ChatItem/chatItemReducer";
 import { updateDoc, getDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import { selectedConversSelector } from "../../redux/selectors";
 const ListMessages = () => {
   const dispatch = useDispatch();
   const { user } = useContext(AuthContext);
-  const [conversation, setConversation] = useState("");
+  const selectedConversSearch = useSelector(selectedConversSelector);
+
   const currentUserCondition = React.useMemo(() => {
     return {
       fieldName: "listFriend",
@@ -35,9 +37,8 @@ const ListMessages = () => {
     });
   };
   sort();
-
   const handleSelectedUser = async (conversation) => {
-    setConversation(conversation);
+    // setConversation(conversation);
     if (conversation.uid) {
       const id =
         user.uid > conversation.uid
@@ -61,6 +62,8 @@ const ListMessages = () => {
           unread: false,
         });
       }
+
+      dispatch(chatItemReducer.actions.selectedRoom(conversation));
     }
     dispatch(chatItemReducer.actions.selectedConversation(conversation));
   };
@@ -72,7 +75,7 @@ const ListMessages = () => {
           <ChatItem
             data={item}
             handleSelectedUser={handleSelectedUser}
-            conversation={conversation}
+            conversation={selectedConversSearch}
           />
         </List.Item>
       )}

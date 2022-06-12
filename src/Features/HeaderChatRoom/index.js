@@ -9,15 +9,23 @@ import {
 } from "@ant-design/icons";
 import useFirestore from "../../Hooks/useFirestore";
 import classNames from "classnames/bind";
+import modalReducer from "../Modal/ModalReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { changeMembersSelector } from "../../redux/selectors";
 const cx = classNames.bind(styles);
 const HeaderChatRoom = ({ room }) => {
+  const dispatch = useDispatch();
+  const changeMembers = useSelector(changeMembersSelector);
+  const handleInviteMember = () => {
+    dispatch(modalReducer.actions.setIsInviteMemberVisible(true));
+  };
   const membersCondition = React.useMemo(
     () => ({
       fieldName: "uid",
       operator: "in",
       compareValue: room.members,
     }),
-    [room.members]
+    [changeMembers]
   );
   const members = useFirestore("users", membersCondition);
   return (
@@ -45,7 +53,11 @@ const HeaderChatRoom = ({ room }) => {
       </div>
       <div className={cx("button-group")}>
         <Tooltip title="add friends">
-          <Button type="text" icon={<UserAddOutlined />} />
+          <Button
+            type="text"
+            icon={<UserAddOutlined />}
+            onClick={handleInviteMember}
+          />
         </Tooltip>
         <Tooltip title="search">
           <Button type="text" icon={<SearchOutlined />} />
@@ -61,4 +73,4 @@ const HeaderChatRoom = ({ room }) => {
   );
 };
 
-export default HeaderChatRoom;
+export default React.memo(HeaderChatRoom);

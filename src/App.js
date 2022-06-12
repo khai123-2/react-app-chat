@@ -1,6 +1,4 @@
 import React from "react";
-// import Login from "./Components/User/Login";
-// import ChatPage from "./Components/ChatPage";
 import Login from "./pages/Login";
 import ChatPage from "./pages/Home";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -10,6 +8,7 @@ import { Provider } from "react-redux";
 import AddFriend from "./Features/Modal/InviteUsersModal";
 import AddRoomModal from "./Features/Modal/AddRoomModal";
 import EditProFile from "./Features/Modal/EditProfile";
+import InviteMemberModal from "./Features/Modal/InviteMemberModal";
 function App() {
   return (
     <BrowserRouter>
@@ -22,6 +21,7 @@ function App() {
           <AddFriend />
           <AddRoomModal />
           <EditProFile />
+          <InviteMemberModal />
         </Provider>
       </AuthProvider>
     </BrowserRouter>

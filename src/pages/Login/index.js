@@ -6,8 +6,8 @@ import {
   FacebookAuthProvider,
   getAdditionalUserInfo,
 } from "firebase/auth";
-import { setDocument } from "../../firebase/service";
-
+import { setDocument, updateDocument } from "../../firebase/service";
+import { generateKeywords } from "../../firebase/service";
 const fbProvider = new FacebookAuthProvider();
 const Login = () => {
   const handleFbLogin = async () => {
@@ -24,21 +24,21 @@ const Login = () => {
           uid: user.uid,
           providerId: additionalUserInfo.providerId,
           listFriend: [],
+          keywords: generateKeywords(user.displayName?.toLowerCase()),
+          isOnline: true,
+        },
+        user.uid
+      );
+    } else {
+      await updateDocument(
+        "users",
+        {
+          isOnline: true,
         },
         user.uid
       );
     }
   };
-  // auth.onAuthStateChanged((user) => {
-  //   console.log(user);
-  // });
-
-  // displayName: user.displayName,
-  //       email: user.email,
-  //       photoURL: user.photoURL,
-  //       uid: user.uid,
-  //       providerId: additionalUserInfo.providerId,
-  //       keywords: generateKeywords(user.displayName?.toLowerCase()),
   return (
     <div>
       <Row justify="center" style={{ height: "800" }}>

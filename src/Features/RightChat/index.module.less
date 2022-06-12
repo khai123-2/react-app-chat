@@ -12,10 +12,22 @@
   align-items: center;
   .search-box {
     width: calc(100% - 53px);
+    :global(.ant-form-item) {
+      margin-bottom: 0;
+    }
   }
 
   button {
     margin-left: 4px;
+  }
+
+  .button-group {
+    display: flex;
+  }
+
+  .close-button {
+    margin-left: 8px;
+    display: none;
   }
 }
 
@@ -28,4 +40,31 @@
   :global(.ant-collapse-content .ant-collapse-content-box) {
     padding: 0;
   }
+}
+
+.recent-search-content {
+  height: 100vh;
+  display: none;
+  .conv-item {
+    display: flex;
+    padding: 0 16px;
+    align-items: center;
+    height: 72px;
+    cursor: pointer;
+    .conv-item-content {
+      margin-left: 8px;
+    }
+  }
+
+  .conv-item:hover {
+    background-color: #e5efff;
+  }
+}
+
+#appear {
+  display: block;
+}
+
+#disappear {
+  display: none;
 }

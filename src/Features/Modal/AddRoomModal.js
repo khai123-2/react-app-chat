@@ -10,36 +10,45 @@ import { AuthContext } from "../../Context/AuthProvider";
 import Camera from "../../components/svg/Camera";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
-import { storage, db } from "../../firebase/config";
+import { storage } from "../../firebase/config";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { generateKeywords } from "../../firebase/service";
 const cx = classNames.bind(styles);
 const AddRoomModal = () => {
   const { user } = useContext(AuthContext);
   const isAddRoomVisible = useSelector(isAddroomVisibleSelector);
   const dispatch = useDispatch();
-  const [img, setImg] = useState(null);
+  const [image, setImage] = useState(null);
   const [form] = Form.useForm();
+  const fromDb = undefined;
   //
   const handleChangeImg = (e) => {
-    setImg(e.target.files[0]);
-    dispatch(modalReducer.actions.setChangeImg(img));
+    const obj = fromDb || {};
+    obj.myFile = e.target.files[0];
+    setImage(obj.myFile);
+    dispatch(modalReducer.actions.setChangeImg(image));
+  };
+
+  const reset = (e) => {
+    const obj = fromDb || {};
+    obj.value = "";
+    e.target.value = obj.value;
   };
   const handleOk = async () => {
     dispatch(modalReducer.actions.setIsAddroomVisible(false));
     const roomName = form.getFieldValue().room;
     if (roomName) {
       const roomId = uuidv4();
-      if (img) {
+      if (image) {
         const uploadImg = async () => {
           const imgRef = ref(
             storage,
-            `avatar/${new Date().getTime()} - ${img.name}`
+            `avatar/${new Date().getTime()} - ${image.name}`
           );
 
           try {
-            const snap = await uploadBytes(imgRef, img);
+            const snap = await uploadBytes(imgRef, image);
             const url = await getDownloadURL(ref(storage, snap.ref.fullPath));
-            console.log(url);
             await setDocument(
               "rooms",
               {
@@ -47,6 +56,7 @@ const AddRoomModal = () => {
                 roomName: roomName,
                 members: [user.uid],
                 photoURL: url,
+                keywords: generateKeywords(roomName?.toLowerCase()),
               },
               roomId
             );
@@ -60,18 +70,19 @@ const AddRoomModal = () => {
           "rooms",
           {
             roomId,
-            roomName: form.getFieldValue().room,
+            roomName: roomName,
             members: [user.uid],
+            keywords: generateKeywords(roomName?.toLowerCase()),
           },
           roomId
         );
       }
     }
-    setImg(null);
+    setImage(null);
     form.resetFields();
   };
   const handleCancel = () => {
-    setImg(null);
+    setImage(null);
     dispatch(modalReducer.actions.setIsAddroomVisible(false));
     form.resetFields();
   };
@@ -86,8 +97,8 @@ const AddRoomModal = () => {
       >
         <Form form={form} layout="vertical">
           <div className={cx("avartar-div")}>
-            {img ? (
-              <Avatar src={URL.createObjectURL(img)} size={64} />
+            {image ? (
+              <Avatar src={URL.createObjectURL(image)} size={64} />
             ) : (
               <Avatar
                 style={{ backgroundColor: "#87d068" }}
@@ -97,15 +108,16 @@ const AddRoomModal = () => {
             )}
             <div className={cx("overlay")}>
               <div>
-                <label htmlFor="photo">
+                <label htmlFor="photoRoom">
                   <Camera />
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   style={{ display: "none" }}
-                  id="photo"
+                  id="photoRoom"
                   onChange={handleChangeImg}
+                  onClick={reset}
                 />
               </div>
             </div>

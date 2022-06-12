@@ -8,6 +8,8 @@ import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+// Production
 // const firebaseConfig = {
 //   apiKey: "AIzaSyDXujp86wcighY2Xjhfe1LF4IXEFwdnOMo",
 //   authDomain: "chat-app-demo-1315c.firebaseapp.com",
@@ -17,6 +19,8 @@ import { getStorage, connectStorageEmulator } from "firebase/storage";
 //   appId: "1:291638349175:web:977dc853a7c6813d316572",
 //   measurementId: "G-E7NM22KXBC",
 // };
+
+// Deployment
 const firebaseConfig = {
   apiKey: "AIzaSyBhQ0PDhhM_8Owa8D7HfrnEo1KseZ6JREw",
   authDomain: "web-app-chat-demo.firebaseapp.com",

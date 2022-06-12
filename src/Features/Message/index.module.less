@@ -28,6 +28,29 @@
   }
 }
 
+.container {
+  display: flex;
+  margin-top: 4px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+  .chatMessage {
+    width: 424px;
+    margin: 0px 10px;
+    .imageContainer {
+      display: flex;
+
+      .customImage:global(.ant-image-img) {
+        width: 100px;
+        height: 100px;
+        border-radius: 5px;
+        object-fit: cover;
+        object-position: center center;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
 .right {
   flex-direction: row-reverse;
 }

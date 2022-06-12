@@ -9,10 +9,9 @@ import { PushpinFilled } from "@ant-design/icons";
 import Moment from "react-moment";
 import moment from "moment";
 const cx = classNames.bind(styles);
-
 const ChatItem = ({ data, handleSelectedUser, conversation }) => {
   const { user } = useContext(AuthContext);
-  const [lastMess, setLastMess] = useState("");
+  const [lastMess, setLastMess] = useState({});
   useEffect(() => {
     let unsub;
     if (data.uid) {
@@ -54,9 +53,11 @@ const ChatItem = ({ data, handleSelectedUser, conversation }) => {
         <div className={cx("conv-item-title")}>
           <div className={cx("conv-item-title__name")}>
             <span>{data.displayName || data.roomName}</span>
-            {lastMess?.from !== user.uid && lastMess?.unread && (
-              <small className={cx("unread")}>New</small>
-            )}
+            {lastMess?.from !== user.uid &&
+              lastMess?.unread &&
+              data?.id !== conversation?.id && (
+                <small className={cx("unread")}>New</small>
+              )}
           </div>
           <div className={cx("conv-item-title__more")}>
             <small>
@@ -92,4 +93,4 @@ const ChatItem = ({ data, handleSelectedUser, conversation }) => {
   );
 };
 
-export default ChatItem;
+export default React.memo(ChatItem);

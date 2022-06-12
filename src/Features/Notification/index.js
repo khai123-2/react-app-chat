@@ -7,7 +7,6 @@ import { AuthContext } from "../../Context/AuthProvider";
 const { Panel } = Collapse;
 const Notification = () => {
   const { user } = useContext(AuthContext);
-
   const requestCondition = React.useMemo(() => {
     return {
       fieldName: "to",

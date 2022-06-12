@@ -38,7 +38,11 @@ const SideMenu = () => {
       <div>
         <div className={cx("nav_tabs_user")}>
           <Tooltip title={currentUser?.displayName} placement="right">
-            <Avatar size={48} src={currentUser?.photoURL}>
+            <Avatar
+              size={48}
+              src={currentUser?.photoURL}
+              style={{ cursor: "pointer" }}
+            >
               {currentUser?.photoURL
                 ? ""
                 : currentUser?.displayName?.charAt(0)?.toUpperCase()}{" "}

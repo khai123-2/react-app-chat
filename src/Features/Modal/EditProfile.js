@@ -5,7 +5,7 @@ import { isEditProfileVisibleSelector } from "../../redux/selectors";
 import modalReducer from "./ModalReducer";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
-import { Form, Input, Avatar } from "antd";
+import { Form, Input, Avatar, Upload, message } from "antd";
 import Camera from "../../components/svg/Camera";
 import { storage, db } from "../../firebase/config";
 import {
@@ -14,8 +14,9 @@ import {
   uploadBytes,
   deleteObject,
 } from "firebase/storage";
+import { InboxOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../Context/AuthProvider";
-import { getDoc, doc, updateDoc } from "firebase/firestore";
+import { getDoc, doc, updateDoc, setDoc } from "firebase/firestore";
 import Delete from "../../components/svg/Delete";
 const cx = classNames.bind(styles);
 
@@ -23,10 +24,8 @@ const EditProFile = () => {
   const { user } = useContext(AuthContext);
   const [currentUser, setCurrentUser] = useState({});
   const [img, setImg] = useState(null);
-  const [saveImg, setSaveImg] = useState(null);
   const dispatch = useDispatch();
   const isEditProfileVisible = useSelector(isEditProfileVisibleSelector);
-
   const handleChangeImg = (e) => {
     setImg(e.target.files[0]);
     dispatch(modalReducer.actions.setChangeImg(img));
@@ -39,7 +38,7 @@ const EditProFile = () => {
         }
       });
     }
-  }, [user.uid, saveImg]);
+  }, [img]);
   const handleOk = async () => {
     if (img) {
       const uploadImg = async () => {
@@ -60,7 +59,7 @@ const EditProFile = () => {
             photoPath: snap.ref.fullPath,
           });
           dispatch(modalReducer.actions.setChangeImg(img));
-          setSaveImg(url);
+
           setImg(null);
         } catch (err) {
           console.log(err.message);
@@ -84,7 +83,6 @@ const EditProFile = () => {
           photoURL: null,
           photoPath: null,
         });
-        setSaveImg("");
         dispatch(modalReducer.actions.setChangeImg(false));
         dispatch(modalReducer.actions.setIsEditProfileVisible(false));
       }
@@ -123,7 +121,7 @@ const EditProFile = () => {
           {img ? (
             <Avatar src={URL.createObjectURL(img)} className={cx("avartar")} />
           ) : (
-            <Avatar src={currentUser.photoURL} className={cx("avartar")}>
+            <Avatar src={currentUser?.photoURL} className={cx("avartar")}>
               {currentUser?.photoURL
                 ? ""
                 : currentUser?.displayName?.charAt(0)?.toUpperCase()}{" "}
@@ -131,18 +129,19 @@ const EditProFile = () => {
           )}
           <div className={cx("overlay")}>
             <div>
-              <label htmlFor="photo">
+              <label htmlFor="photoUser">
                 <Camera />
               </label>
-              {currentUser.photoURL ? (
+              {currentUser?.photoURL ? (
                 <Delete deleteImage={deleteImage} />
               ) : null}
               <input
                 type="file"
                 accept="image/*"
                 style={{ display: "none" }}
-                id="photo"
+                id="photoUser"
                 onChange={handleChangeImg}
+                onClick={(e) => (e.target.value = "")}
               />
             </div>
           </div>

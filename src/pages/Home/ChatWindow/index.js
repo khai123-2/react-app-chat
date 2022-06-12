@@ -8,7 +8,7 @@ const ChatWindow = () => {
   return (
     <div className={cx("chat-window")}>
       <Row>
-        <Col span={17}>
+        <Col span={24}>
           <ChatView />
         </Col>
         <Col span={7}>

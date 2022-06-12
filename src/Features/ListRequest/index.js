@@ -7,7 +7,6 @@ import { arrayUnion } from "firebase/firestore";
 import { AuthContext } from "../../Context/AuthProvider";
 const FriendRequestBox = ({ userSendRequest }) => {
   const { user } = useContext(AuthContext);
-
   //Delete
 
   const handleReject = async (requestUserId) => {
@@ -94,4 +93,4 @@ const FriendRequestBox = ({ userSendRequest }) => {
   );
 };
 
-export default FriendRequestBox;
+export default React.memo(FriendRequestBox);
