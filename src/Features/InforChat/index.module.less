@@ -1,0 +1,21 @@
+.container {
+  height: 100vh;
+  padding: 14px 10px 10px;
+
+  .header-infor {
+    display: flex;
+    flex-direction: column;
+    .header-infor-avatar {
+      align-self: center;
+    }
+    .header-infor-name {
+      align-self: center;
+    }
+  }
+}
+
+.customAvatar {
+  :global(.ant-list-item-meta-avatar) {
+    margin-right: 8px;
+  }
+}

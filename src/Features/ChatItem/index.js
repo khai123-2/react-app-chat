@@ -42,7 +42,7 @@ const ChatItem = ({ data, handleSelectedUser, conversation }) => {
       onClick={() => handleSelectedUser(data)}
     >
       <div className={cx("conv-item-avatar")}>
-        <Avatar src={data.photoURL} className={cx("avartar")}>
+        <Avatar src={data.photoURL} className={cx("avatar")}>
           {data.photoURL
             ? ""
             : data.displayName?.charAt(0)?.toUpperCase() ||

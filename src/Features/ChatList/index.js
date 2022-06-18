@@ -83,4 +83,4 @@ const ListMessages = () => {
   );
 };
 
-export default ListMessages;
+export default React.memo(ListMessages);

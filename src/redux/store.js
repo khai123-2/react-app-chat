@@ -4,7 +4,7 @@ import chatItem from "../Features/ChatItem/chatItemReducer";
 import modal from "../Features/Modal/ModalReducer";
 import listRequest from "../Features/ListRequest/listRequestReducer";
 import notification from "../Features/Notification/notificationReducer";
-
+import inforChatReducer from "../Features/InforChat/inForChatReducer";
 const store = configureStore({
   reducer: {
     sideMenu: sideMenu.reducer,
@@ -12,6 +12,7 @@ const store = configureStore({
     modal: modal.reducer,
     listRequest: listRequest.reducer,
     notification: notification.reducer,
+    inforChat: inforChatReducer.reducer,
   },
   middleware: getDefaultMiddleware({
     serializableCheck: false,

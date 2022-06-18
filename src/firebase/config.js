@@ -20,7 +20,7 @@ import { getStorage, connectStorageEmulator } from "firebase/storage";
 //   measurementId: "G-E7NM22KXBC",
 // };
 
-// Deployment
+// Development
 const firebaseConfig = {
   apiKey: "AIzaSyBhQ0PDhhM_8Owa8D7HfrnEo1KseZ6JREw",
   authDomain: "web-app-chat-demo.firebaseapp.com",
@@ -37,9 +37,9 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-if (window.location.hostname === "localhost") {
-  connectAuthEmulator(auth, "http://localhost:9099");
-  connectFirestoreEmulator(db, "localhost", 8080);
-  connectStorageEmulator(storage, "localhost", 9199);
-}
+// if (window.location.hostname === "localhost") {
+//   connectAuthEmulator(auth, "http://localhost:9099");
+//   connectFirestoreEmulator(db, "localhost", 8000);
+//   connectStorageEmulator(storage, "localhost", 9199);
+// }
 export { auth, db, storage };

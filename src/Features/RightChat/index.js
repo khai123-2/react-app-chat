@@ -19,20 +19,7 @@ import { AuthContext } from "../../Context/AuthProvider";
 import { db } from "../../firebase/config";
 const cx = classNames.bind(styles);
 
-function Render({ tab }) {
-  if (tab === "chats") {
-    return <ListMessages />;
-  }
-  if (tab === "contacts") {
-    // return <Groups />;
-    return <h1>condtacts</h1>;
-  }
-  if (tab === "notifications") {
-    return <Notification />;
-  }
-}
 const RightChatd = () => {
-  console.log("rightchat");
   const tab = useSelector(tabSelector);
   const [search, setSearch] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -46,6 +33,19 @@ const RightChatd = () => {
     dispatch(modalReducer.actions.setIsAddroomVisible(true));
   };
 
+  const renderChildrenTab = () => {
+    const menuTab = tab;
+    switch (menuTab) {
+      case "chats":
+        return <ListMessages />;
+      case "contacts":
+        return <h1>condtacts</h1>;
+      case "notifications":
+        return <Notification />;
+      default:
+        return null;
+    }
+  };
   const debounce = (func) => {
     let timer;
     return function (...args) {
@@ -96,6 +96,7 @@ const RightChatd = () => {
 
   const handleSelectedUser = (conversation) => {
     dispatch(chatItemReducer.actions.selectedConversation(conversation));
+    setVisible(true);
   };
   const optimisedVersion = useCallback(debounce(handleSearch), []);
   return (
@@ -112,7 +113,10 @@ const RightChatd = () => {
             />
           </Form.Item>
         </Form>
-        <div className={cx("button-group")} id={visible && styles.disappear}>
+        <div
+          className={cx("button-group")}
+          id={visible ? styles.disappear : undefined}
+        >
           <Button
             onClick={handleAddfriend}
             shape="circle"
@@ -126,7 +130,10 @@ const RightChatd = () => {
             type="text"
           />
         </div>
-        <div className={cx("close-button")} id={visible && styles.appear}>
+        <div
+          className={cx("close-button")}
+          id={visible ? styles.appear : undefined}
+        >
           <Button type="text" size="small" shape="circle" onClick={handleClose}>
             Close
           </Button>
@@ -135,7 +142,7 @@ const RightChatd = () => {
       <div
         className={cx("recent-search-content")}
         // style={visible && { display: "block" }}
-        id={visible && styles.appear}
+        id={visible ? styles.appear : undefined}
       >
         {search?.map((item, i) => (
           <div
@@ -144,7 +151,7 @@ const RightChatd = () => {
             key={i}
           >
             <div className={cx("conv-item-avatar")}>
-              <Avatar src={item.photoURL} className={cx("avartar")} size={48}>
+              <Avatar src={item.photoURL} className={cx("avatar")} size={48}>
                 {item.photoURL
                   ? ""
                   : item.displayName?.charAt(0)?.toUpperCase() ||
@@ -157,8 +164,11 @@ const RightChatd = () => {
           </div>
         ))}
       </div>
-      <div className={cx("content")}>
-        <Render tab={tab} />
+      <div
+        className={cx("content")}
+        id={visible ? styles.disappear : undefined}
+      >
+        {renderChildrenTab()}
       </div>
     </>
   );

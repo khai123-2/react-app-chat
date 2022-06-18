@@ -117,11 +117,11 @@ const EditProFile = () => {
             src="https://doot-light.react.themesbrand.com/static/media/img-4.c7a84ad5.jpg"
           />
         </div>
-        <div className={cx("avartar-div")}>
+        <div className={cx("avatar-div")}>
           {img ? (
-            <Avatar src={URL.createObjectURL(img)} className={cx("avartar")} />
+            <Avatar src={URL.createObjectURL(img)} className={cx("avatar")} />
           ) : (
-            <Avatar src={currentUser?.photoURL} className={cx("avartar")}>
+            <Avatar src={currentUser?.photoURL} className={cx("avatar")}>
               {currentUser?.photoURL
                 ? ""
                 : currentUser?.displayName?.charAt(0)?.toUpperCase()}{" "}

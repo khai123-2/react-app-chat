@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Button, Form, Input, Space, Typography } from "antd";
 import { auth } from "../../firebase/config";
-import { useNavigate } from "react-router-dom";
 import {
   signInWithPopup,
   FacebookAuthProvider,
   GoogleAuthProvider,
   getAdditionalUserInfo,
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
@@ -16,6 +16,7 @@ import {
   LockOutlined,
   FacebookOutlined,
   GoogleOutlined,
+  MailOutlined,
 } from "@ant-design/icons";
 import { setDocument, updateDocument } from "../../firebase/service";
 import { generateKeywords } from "../../firebase/service";
@@ -24,21 +25,37 @@ const fbProvider = new FacebookAuthProvider();
 const googleProvider = new GoogleAuthProvider();
 const cx = classNames.bind(styles);
 
-const Login = () => {
+const Register = () => {
   const [loading, setLoading] = useState(false);
-  const onLogin = async ({ email, password }) => {
+  const [form] = Form.useForm();
+  const onSubmit = async ({ email, password, displayName }) => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      await updateDocument(
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      setDocument(
         "users",
         {
+          displayName,
+          email,
+          photoURL: null,
+          uid: user.uid,
+          providerId: "email/password",
+          listFriend: [],
+          keywords: generateKeywords(displayName?.toLowerCase()),
           isOnline: true,
         },
-        auth.currentUser.uid
+        user.uid
       );
+      await updateProfile(auth.currentUser, {
+        displayName,
+        photoURL: null,
+      });
     } catch (error) {
-      console.log(error);
+      alert("error,", error);
     }
     setLoading(false);
   };
@@ -84,25 +101,34 @@ const Login = () => {
               />
             </div>
             <div className={cx("desc")}>
-              <Typography.Title level={3}>Welcome back !</Typography.Title>
-              Sign in to continue to Doot.
+              <Typography.Title level={3}>Register Account</Typography.Title>
+              Get your free Doot account now.
             </div>
           </div>
           <div className={cx("main")}>
-            <Form name="control-ref" onFinish={onLogin}>
+            <Form name="control-ref" form={form} onFinish={onSubmit}>
               <Form.Item
-                name="email"
+                name="displayName"
                 rules={[
                   {
+                    whitespace: true,
+                    message: "The display name cannot be empty",
+                  },
+                  {
                     required: true,
-                    message: "Please input email",
+                    message: "Please input your name",
+                  },
+                  {
+                    min: 6,
+                    message: "The display name at least 6 character",
                   },
                 ]}
+                hasFeedback
               >
                 <Input
                   size="large"
-                  type="email"
-                  placeholder="Email"
+                  type="text"
+                  placeholder="Display name"
                   prefix={
                     <UserOutlined
                       style={{
@@ -113,11 +139,56 @@ const Login = () => {
                 />
               </Form.Item>
               <Form.Item
+                name="email"
+                rules={[
+                  {
+                    type: "email",
+                    message: "The input is not valid E-mail!",
+                  },
+                  {
+                    required: true,
+                    message: "Please input email",
+                  },
+                ]}
+                hasFeedback
+              >
+                <Input
+                  size="large"
+                  type="email"
+                  placeholder="Email"
+                  prefix={
+                    <MailOutlined
+                      style={{
+                        color: "#4eac6d",
+                      }}
+                    />
+                  }
+                />
+              </Form.Item>
+
+              <Form.Item
                 name="password"
+                hasFeedback
                 rules={[
                   {
                     required: true,
                     message: "Please input password",
+                  },
+                  {
+                    whitespace: true,
+                    message: "Password cannot be empty",
+                  },
+                  {
+                    min: 6,
+                    validator: (_, value) =>
+                      value &&
+                      value.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/)
+                        ? Promise.resolve()
+                        : Promise.reject(
+                            new Error(
+                              "Password at least 6 characters which contain at least one numeric digit, one uppercase and one lowercase letter"
+                            )
+                          ),
                   },
                 ]}
               >
@@ -134,8 +205,41 @@ const Login = () => {
                   }
                 />
               </Form.Item>
-              <Form.Item>
-                <Link to="/register">Forgot password ?</Link>
+              <Form.Item
+                name="comfirmPassword"
+                dependencies={["password"]}
+                hasFeedback
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input comfirm password",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(
+                          "The two passwords that you entered do not match!"
+                        )
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password
+                  size="large"
+                  type="password"
+                  placeholder="Comfirm password"
+                  prefix={
+                    <LockOutlined
+                      style={{
+                        color: "#4eac6d",
+                      }}
+                    />
+                  }
+                />
               </Form.Item>
               <Form.Item>
                 <Button
@@ -145,7 +249,7 @@ const Login = () => {
                   htmlType="submit"
                   disabled={loading}
                 >
-                  Login
+                  Register
                 </Button>
               </Form.Item>
             </Form>
@@ -167,12 +271,12 @@ const Login = () => {
             </div>
             <div className={cx("text-muted")}>
               <p>
-                Don't you have an acount ?{" "}
+                Already have an account ?{" "}
                 <Link
                   style={{ fontWeight: "600", fontSize: "15px" }}
-                  to="/register"
+                  to="/login"
                 >
-                  Register
+                  Login
                 </Link>
               </p>
             </div>
@@ -183,4 +287,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

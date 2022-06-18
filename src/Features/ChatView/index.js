@@ -30,13 +30,9 @@ import classNames from "classnames/bind";
 import chatItemReducer from "../ChatItem/chatItemReducer";
 import Image from "../../components/svg/Image";
 import File from "../../components/svg/File";
-import {
-  ref,
-  getDownloadURL,
-  uploadBytes,
-  uploadBytesResumable,
-} from "firebase/storage";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 const cx = classNames.bind(styles);
+
 const ChatView = () => {
   const [form] = Form.useForm();
   const inputRef = useRef(null);
@@ -45,19 +41,15 @@ const ChatView = () => {
   const [msgs, setMsgs] = useState([]);
   const [userCurrent, setUserCurrent] = useState({});
   const [progress, setProgress] = useState(0);
-
-  const [urls, setUrls] = useState([]);
   const dispatch = useDispatch();
   const {
     user: { uid, displayName },
   } = useContext(AuthContext);
   const selectedConvers = useSelector(selectedConversSelector);
-  console.log("chatview");
   if (selectedConvers) {
     dispatch(chatItemReducer.actions.selectedConversation(selectedConvers));
   }
   const isValue = Object.keys(selectedConvers).length !== 0;
-
   const handleInputChange = useCallback(
     (e) => {
       setInputValue(e.target.value);
@@ -71,102 +63,113 @@ const ChatView = () => {
       }
     });
   }, [msgs]);
-
-  // const handleImageChange = async (e) => {
-  //   const images = [];
-  //   for (let i = 0; i < e.target.files.length; i++) {
-  //     const newImage = e.target.files[i];
-  //     newImage["id"] = Math.random();
-  //     images.push(newImage);
-  //   }
-
-  //   Promise.all(
-  //     images.map(async (image) => {
-  //       const imgRef = await ref(storage, `images/${image.id} - ${image.name}`);
-  //       const snap = await uploadBytes(imgRef, image);
-  //       const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
-  //       return dlUrl;
-  //     })
-  //   )
-  //     .then(async (urls) => {
-  //       if (selectedConvers.uid) {
-  //         const id =
-  //           uid > selectedConvers.uid
-  //             ? `${uid + selectedConvers.uid}`
-  //             : `${selectedConvers.uid + uid}`;
-
-  //         await addDoc(collection(db, "messages", id, "chat"), {
-  //           media: urls,
-  //           from: uid,
-  //           photoURL: userCurrent.photoURL,
-  //           to: selectedConvers.uid,
-  //           displayName,
-  //           type: "user",
-  //           createdAt: serverTimestamp(),
-  //         });
-  //         await setDocument(
-  //           "lastMsg",
-  //           {
-  //             text: "image",
-  //             from: uid,
-  //             to: selectedConvers.uid,
-  //             unread: true,
-  //           },
-  //           id
-  //         );
-  //       }
-  //       if (selectedConvers.roomId) {
-  //         //room messages
-  //         await addDoc(
-  //           collection(db, "messages", selectedConvers.roomId, "chat"),
-  //           {
-  //             media: urls,
-  //             from: uid,
-  //             photoURL: userCurrent.photoURL,
-  //             to: selectedConvers.roomId,
-  //             displayName,
-  //             type: "room",
-  //             createdAt: serverTimestamp(),
-  //           }
-  //         );
-
-  //         await setDocument(
-  //           "lastMsg",
-  //           {
-  //             text: "image",
-  //             from: uid,
-  //             to: selectedConvers.roomId,
-  //             displayName,
-  //             unread: true,
-  //           },
-  //           selectedConvers.roomId
-  //         );
-  //       }
-  //     })
-  //     .catch((e) => {
-  //       console.log(e);
-  //     });
-  // };
-  console.log(urls);
-  const handleImageChange = (e) => {
-    const promises = [];
+  const handleFileUpload = async (e) => {
+    const files = [];
+    const fileNames = [];
     for (let i = 0; i < e.target.files.length; i++) {
-      const newImage = e.target.files[i];
-      newImage["id"] = Math.random();
-      // setImages((prevState) => [...prevState, newImage]);
+      const newFile = e.target.files[i];
+      newFile["id"] = Math.random();
+      files.push(newFile);
+      fileNames.push(newFile.name);
     }
+    const promises = [];
+    files.forEach((image) => {
+      const storageRef = ref(storage, `files/${image.id} - ${image.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, image);
+      promises.push(uploadTask);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgress(progress);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    });
+
+    Promise.all(promises)
+      .then((uploadTaskSnapshotsArray) => {
+        const promises = [];
+        uploadTaskSnapshotsArray.forEach((uploadTaskSnapshot) => {
+          promises.push(
+            getDownloadURL(ref(storage, uploadTaskSnapshot.ref.fullPath))
+          );
+        });
+        return Promise.all(promises);
+      })
+      .then((urls) => {
+        const files = urls.map((url, i) => {
+          return { name: fileNames[i], url };
+        });
+        if (selectedConvers.uid) {
+          const id =
+            uid > selectedConvers.uid
+              ? `${uid + selectedConvers.uid}`
+              : `${selectedConvers.uid + uid}`;
+
+          addDoc(collection(db, "messages", id, "chat"), {
+            files: files,
+            from: uid,
+            typeMess: "file",
+            photoURL: userCurrent.photoURL,
+            to: selectedConvers.uid,
+            displayName,
+            type: "user",
+            createdAt: serverTimestamp(),
+          });
+          setDocument(
+            "lastMsg",
+            {
+              text: "file",
+              from: uid,
+              to: selectedConvers.uid,
+              unread: true,
+            },
+            id
+          );
+        }
+        if (selectedConvers.roomId) {
+          //room messages
+          addDoc(collection(db, "messages", selectedConvers.roomId, "chat"), {
+            files: files,
+            from: uid,
+            typeMess: "file",
+            photoURL: userCurrent.photoURL,
+            to: selectedConvers.roomId,
+            displayName,
+            type: "room",
+            createdAt: serverTimestamp(),
+          });
+
+          setDocument(
+            "lastMsg",
+            {
+              text: "file",
+              from: uid,
+              to: selectedConvers.roomId,
+              displayName,
+              unread: true,
+            },
+            selectedConvers.roomId
+          );
+        }
+        setProgress(0);
+      })
+      .catch((err) => console.log(err));
   };
-  // console.log(images);
-  const handleOk = async (e) => {
+  const handleImageUpload = async (e) => {
     const imgs = [];
     for (let i = 0; i < e.target.files.length; i++) {
       const newImage = e.target.files[i];
       newImage["id"] = Math.random();
-      // setImages((prevState) => [...prevState, newImage]);
       imgs.push(newImage);
     }
     const promises = [];
-    imgs.map((image) => {
+    imgs.forEach((image) => {
       const storageRef = ref(storage, `images/${image.id} - ${image.name}`);
       const uploadTask = uploadBytesResumable(storageRef, image);
       promises.push(uploadTask);
@@ -202,8 +205,9 @@ const ChatView = () => {
               : `${selectedConvers.uid + uid}`;
 
           addDoc(collection(db, "messages", id, "chat"), {
-            media: urls,
+            imgs: urls,
             from: uid,
+            typeMess: "image",
             photoURL: userCurrent.photoURL,
             to: selectedConvers.uid,
             displayName,
@@ -224,14 +228,26 @@ const ChatView = () => {
         if (selectedConvers.roomId) {
           //room messages
           addDoc(collection(db, "messages", selectedConvers.roomId, "chat"), {
-            media: urls,
+            imgs: urls,
             from: uid,
+            typeMess: "image",
             photoURL: userCurrent.photoURL,
             to: selectedConvers.roomId,
             displayName,
             type: "room",
             createdAt: serverTimestamp(),
           });
+          setDocument(
+            "lastMsg",
+            {
+              text: "image",
+              from: uid,
+              to: selectedConvers.roomId,
+              displayName,
+              unread: true,
+            },
+            selectedConvers.roomId
+          );
         }
         setProgress(0);
       })
@@ -248,6 +264,7 @@ const ChatView = () => {
 
       await addDoc(collection(db, "messages", id, "chat"), {
         text: inputValue,
+        typeMess: "text",
         from: uid,
         photoURL: userCurrent.photoURL,
         to: selectedConvers.uid,
@@ -271,6 +288,7 @@ const ChatView = () => {
       await addDoc(collection(db, "messages", selectedConvers.roomId, "chat"), {
         text: inputValue,
         from: uid,
+        typeMess: "text",
         photoURL: userCurrent.photoURL,
         to: selectedConvers.roomId,
         displayName,
@@ -355,17 +373,12 @@ const ChatView = () => {
               <HeaderChatRoom room={selectedConvers} />
             )}
           </div>
-          <Progress percent={progress} />
+          {/* <Progress percent={progress} /> */}
           <div className={cx("chat-view")}>
             <div className={cx("messages-page")}>
               <div className={cx("messages-view ")} ref={messageListRef}>
                 {msgs.map((msg, i, messages) => (
-                  <Message
-                    currentUser={uid}
-                    key={i}
-                    msg={msg}
-                    prevMess={messages[i - 1]?.from}
-                  />
+                  <Message key={i} msg={msg} prevMess={messages[i - 1]?.from} />
                 ))}
               </div>
             </div>
@@ -376,7 +389,7 @@ const ChatView = () => {
                     <Image />
                   </label>
                   <input
-                    onChange={handleOk}
+                    onChange={handleImageUpload}
                     type="file"
                     id="img"
                     multiple
@@ -389,10 +402,11 @@ const ChatView = () => {
                     <File />
                   </label>
                   <input
-                    // onChange={(e) => setImg(e.target.files[0])}
+                    onChange={handleFileUpload}
                     type="file"
                     id="file"
-                    accept="image/*"
+                    accept="*"
+                    multiple
                     style={{ display: "none" }}
                   />
                 </Tooltip>
@@ -414,7 +428,7 @@ const ChatView = () => {
                       <Button type="text" icon={<SmileOutlined />} />
                     </Tooltip>
                     <Button
-                      onClick={handleOk}
+                      onClick={handleOnSubmit}
                       size="large"
                       style={{ borderRadius: "6px" }}
                       type="primary"

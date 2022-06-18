@@ -96,7 +96,7 @@ const AddRoomModal = () => {
         title="Tạo nhóm"
       >
         <Form form={form} layout="vertical">
-          <div className={cx("avartar-div")}>
+          <div className={cx("avatar-div")}>
             {image ? (
               <Avatar src={URL.createObjectURL(image)} size={64} />
             ) : (

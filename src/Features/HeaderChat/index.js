@@ -1,17 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./index.module.less";
-import { Avatar, Button, Tooltip, Badge } from "antd";
-import {
-  SearchOutlined,
-  UserAddOutlined,
-  InfoCircleOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
+import { Avatar, Badge } from "antd";
+import { InfoCircleOutlined, InfoCircleFilled } from "@ant-design/icons";
 import classNames from "classnames/bind";
+import { useDispatch } from "react-redux";
+import inforChatReducer from "../InforChat/inForChatReducer";
 const cx = classNames.bind(styles);
 
 ////
 const HeaderChat = ({ user }) => {
+  const [active, setActive] = useState(false);
+  const dispatch = useDispatch();
+  const handleSelectInforChat = () => {
+    if (!active) {
+      dispatch(
+        inforChatReducer.actions.setSelectedInforChat({
+          colChatView: 17,
+          isDisplay: "block",
+        })
+      );
+    } else {
+      dispatch(
+        inforChatReducer.actions.setSelectedInforChat({
+          colChatView: 24,
+          isDisplay: "none",
+        })
+      );
+    }
+    setActive(!active);
+  };
   return (
     <>
       <div className={cx("header-infor")}>
@@ -32,19 +49,12 @@ const HeaderChat = ({ user }) => {
           <span style={{ fontSize: "12px" }}></span>
         </div>
       </div>
-      <div className={cx("button-group")}>
-        <Tooltip title="add friends">
-          <Button type="text" icon={<UserAddOutlined />} />
-        </Tooltip>
-        <Tooltip title="search">
-          <Button type="text" icon={<SearchOutlined />} />
-        </Tooltip>
-        <Tooltip title="Call">
-          <Button type="text" icon={<VideoCameraOutlined />} />
-        </Tooltip>
-        <Tooltip title="Chat infor">
-          <Button type="text" icon={<InfoCircleOutlined />} />
-        </Tooltip>
+      <div className={cx("button-group")} onClick={handleSelectInforChat}>
+        {active ? (
+          <InfoCircleFilled style={{ fontSize: "20px", cursor: "pointer" }} />
+        ) : (
+          <InfoCircleOutlined style={{ fontSize: "20px", cursor: "pointer" }} />
+        )}
       </div>
     </>
   );

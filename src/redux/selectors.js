@@ -12,3 +12,5 @@ export const isAddroomVisibleSelector = (state) => state.modal.isAddroomVisible;
 export const isEditProfileVisibleSelector = (state) =>
   state.modal.isEditProfileVisible;
 export const changeImgSelector = (state) => state.modal.changeImg;
+export const selectedInforChatSelector = (state) =>
+  state.inforChat.colInforChat;

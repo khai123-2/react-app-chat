@@ -1,32 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./index.module.less";
-import { Avatar, Button, Tooltip } from "antd";
+import { Avatar, Tooltip, Button } from "antd";
 import {
-  SearchOutlined,
-  UserAddOutlined,
   InfoCircleOutlined,
-  VideoCameraOutlined,
+  InfoCircleFilled,
+  UserAddOutlined,
 } from "@ant-design/icons";
 import useFirestore from "../../Hooks/useFirestore";
 import classNames from "classnames/bind";
+import inforChatReducer from "../InforChat/inForChatReducer";
 import modalReducer from "../Modal/ModalReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { changeMembersSelector } from "../../redux/selectors";
 const cx = classNames.bind(styles);
 const HeaderChatRoom = ({ room }) => {
   const dispatch = useDispatch();
+  const [active, setActive] = useState(false);
   const changeMembers = useSelector(changeMembersSelector);
   const handleInviteMember = () => {
     dispatch(modalReducer.actions.setIsInviteMemberVisible(true));
   };
-  const membersCondition = React.useMemo(
-    () => ({
+  const handleSelectInforChat = () => {
+    if (!active) {
+      dispatch(
+        inforChatReducer.actions.setSelectedInforChat({
+          colChatView: 17,
+          isDisplay: "block",
+        })
+      );
+    } else {
+      dispatch(
+        inforChatReducer.actions.setSelectedInforChat({
+          colChatView: 24,
+          isDisplay: "none",
+        })
+      );
+    }
+    setActive(!active);
+  };
+  const membersCondition = React.useMemo(() => {
+    return {
       fieldName: "uid",
       operator: "in",
       compareValue: room.members,
-    }),
-    [changeMembers]
-  );
+    };
+  }, [room.members]);
   const members = useFirestore("users", membersCondition);
   return (
     <>
@@ -51,7 +69,7 @@ const HeaderChatRoom = ({ room }) => {
           </Avatar.Group>
         </div>
       </div>
-      <div className={cx("button-group")}>
+      <div className={cx("button-group")} onClick={handleSelectInforChat}>
         <Tooltip title="add friends">
           <Button
             type="text"
@@ -59,15 +77,11 @@ const HeaderChatRoom = ({ room }) => {
             onClick={handleInviteMember}
           />
         </Tooltip>
-        <Tooltip title="search">
-          <Button type="text" icon={<SearchOutlined />} />
-        </Tooltip>
-        <Tooltip title="Call">
-          <Button type="text" icon={<VideoCameraOutlined />} />
-        </Tooltip>
-        <Tooltip title="Chat infor">
-          <Button type="text" icon={<InfoCircleOutlined />} />
-        </Tooltip>
+        {active ? (
+          <InfoCircleFilled style={{ fontSize: "20px", cursor: "pointer" }} />
+        ) : (
+          <InfoCircleOutlined style={{ fontSize: "20px", cursor: "pointer" }} />
+        )}
       </div>
     </>
   );

@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100vh;
+  background: #f0f2f5;
+  .content {
+    flex: 1;
+    padding: 52px 0;
+
+    .top {
+      text-align: center;
+
+      .logo {
+        height: 80px;
+        vertical-align: top;
+      }
+
+      .desc {
+        margin-top: 24px;
+        margin-bottom: 40px;
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 14px;
+      }
+    }
+
+    .main {
+      width: 368px;
+      margin: 0 auto;
+      .button {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    background-image: var(--layout-body-background);
+    background-repeat: no-repeat;
+    background-position: center 110px;
+    background-size: 100%;
+  }
+
+  .content {
+    padding: 32px 0 24px;
+  }
+}

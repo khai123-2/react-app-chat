@@ -13,7 +13,18 @@ export default function AuthProvider({ children }) {
   React.useEffect(() => {
     const unsubscibed = auth.onAuthStateChanged((user) => {
       if (user) {
-        const { displayName, email, uid, photoURL } = user;
+        const { displayName, email, uid, photoURL, emailVerified } = user;
+
+        if (photoURL === null && emailVerified === false) {
+          setUser({
+            displayName,
+            email,
+            uid,
+          });
+          setIsLoading(false);
+          navigate("/verify");
+          return;
+        }
         setUser({
           displayName,
           email,
@@ -28,7 +39,6 @@ export default function AuthProvider({ children }) {
       // reset user info
       setUser({});
       setIsLoading(false);
-      navigate("/login");
     });
 
     // clean function
