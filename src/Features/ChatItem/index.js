@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import styles from "./index.module.less";
 import { AuthContext } from "../../Context/AuthProvider";
-import { onSnapshot, doc } from "firebase/firestore";
+import {
+  onSnapshot,
+  doc,
+  updateDoc,
+  collectionGroup,
+} from "firebase/firestore";
 import { db } from "../../firebase/config";
 import classNames from "classnames/bind";
 import { Avatar } from "antd";
@@ -20,16 +25,27 @@ const ChatItem = ({ data, handleSelectedUser, conversation }) => {
           ? `${user.uid + data.uid}`
           : `${data.uid + user.uid}`;
       unsub = onSnapshot(doc(db, "lastMsg", id), (doc) => {
+        if (doc.data().id.includes(conversation.id)) {
+          setLastMess({ ...doc.data(), unread: false });
+          return;
+        }
         setLastMess(doc.data());
+        return;
       });
     }
     if (data.roomId) {
       unsub = onSnapshot(doc(db, "lastMsg", data.roomId), (doc) => {
+        if (doc.data().id === conversation.id) {
+          setLastMess({ ...doc.data(), unread: false });
+          return;
+        }
         setLastMess(doc.data());
+        return;
       });
     }
     return () => unsub();
   }, [data.uid, data.roomId]);
+
   return (
     <div
       className={cx(`conv-item`)}

@@ -3,14 +3,14 @@ import { SettingOutlined, SettingFilled } from "@ant-design/icons";
 import { Tooltip, Avatar, Dropdown } from "antd";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
-import { SideMenuBotData, SideMenutopData } from "./SideMenuData";
+import { SideMenutopData } from "./SideMenuData";
 import MenuSettingData from "./MenuSettingData";
 import { useSelector, useDispatch } from "react-redux";
 import { tabSelector, changeImgSelector } from "../../redux/selectors";
 import sideMenuReducer from "./sideMenuReducer";
 import { AuthContext } from "../../Context/AuthProvider";
 import modalReducer from "../Modal/ModalReducer";
-import { getDoc, doc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/config";
 const cx = classNames.bind(styles);
 const SideMenu = () => {
@@ -19,7 +19,7 @@ const SideMenu = () => {
   const tab = useSelector(tabSelector);
   const img = useSelector(changeImgSelector);
   const dispatch = useDispatch();
-  const [currentUser, setCurrentUser] = useState();
+  const [currentUser, setCurrentUser] = useState({});
   const handleSelectedTab = (tab) => {
     dispatch(sideMenuReducer.actions.selectedtab(tab));
   };
@@ -27,11 +27,11 @@ const SideMenu = () => {
     dispatch(modalReducer.actions.setIsEditProfileVisible(true));
   };
   useEffect(() => {
-    getDoc(doc(db, "users", user.uid)).then((docSnap) => {
-      if (docSnap.exists) {
-        setCurrentUser(docSnap.data());
-      }
+    const unsub = onSnapshot(doc(db, "users", user.uid), (doc) => {
+      setCurrentUser(doc.data());
     });
+
+    return () => unsub();
   }, [user.uid, img]);
   return (
     <>
@@ -70,20 +70,6 @@ const SideMenu = () => {
       </div>
       <div className={cx("nav_tabs_bottom")}>
         <ul className={cx("tablist")}>
-          {SideMenuBotData.map((val, key) => {
-            return (
-              <li
-                id={tab === val.tab ? styles.active : ""}
-                className={cx("leftbar-tab")}
-                key={key}
-                onClick={() => handleSelectedTab(val.tab)}
-              >
-                <Tooltip title={val.title} placement="right">
-                  {tab === val.tab ? val.iconFilled : val.iconOutlined}
-                </Tooltip>
-              </li>
-            );
-          })}
           <Dropdown
             key="settings"
             overlay={<MenuSettingData handleOpenProfile={handleOpenProfile} />}
@@ -94,7 +80,7 @@ const SideMenu = () => {
               id={styles.settingsTab}
               className={cx("leftbar-tab")}
             >
-              <Tooltip title="settings" placement="right">
+              <Tooltip title="Cài đặt" placement="right">
                 {tab === "settings" ? <SettingFilled /> : <SettingOutlined />}
               </Tooltip>
             </div>

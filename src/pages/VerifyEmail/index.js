@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Button, Typography } from "antd";
+import React from "react";
+import { Button, Typography, notification } from "antd";
 import { auth } from "../../firebase/config";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
@@ -13,7 +13,10 @@ const VerifyEmail = () => {
   const handleSendVerification = async () => {
     try {
       await sendEmailVerification(user);
-      alert("send verification");
+      notification.success({
+        message: "Gửi xác nhận địa chỉ email thành công",
+        description: "Vui lòng kiểm tra email",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -31,10 +34,8 @@ const VerifyEmail = () => {
               />
             </div>
             <div className={cx("desc")}>
-              <Typography.Title level={3}>
-                {`Wellcome  ${user.displayName} to Doot`}
-              </Typography.Title>
-              You need to verify email to continue
+              <Typography.Title level={3}>Wellcome to Doot</Typography.Title>
+              Bạn cần xác minh email để tiếp tục
             </div>
           </div>
           <div className={cx("main")}>
@@ -44,7 +45,7 @@ const VerifyEmail = () => {
               type="primary"
               onClick={handleSendVerification}
             >
-              Send verification to your email
+              Gửi xác nhận đến email của bạn
             </Button>
             <Button
               className={cx("button")}
@@ -52,7 +53,7 @@ const VerifyEmail = () => {
               type="primary"
               onClick={() => signOut(auth)}
             >
-              Log out
+              Đăng xuất
             </Button>
           </div>
         </div>

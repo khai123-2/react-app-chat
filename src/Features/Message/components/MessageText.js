@@ -40,7 +40,11 @@ const MessageText = ({ msg, prevMess }) => {
             </Avatar>
           )}
         </div>
-        <div className={styles.wrapperMessage}>
+        <div
+          className={`${styles.wrapperMessage} ${
+            user.uid === msg.from ? styles.me : styles.friend
+          }`}
+        >
           <Typography.Text className={styles.author}>
             {user.uid !== msg.from && msg.type === "room"
               ? msg.displayName

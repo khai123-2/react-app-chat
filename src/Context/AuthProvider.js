@@ -14,10 +14,9 @@ export default function AuthProvider({ children }) {
     const unsubscibed = auth.onAuthStateChanged((user) => {
       if (user) {
         const { displayName, email, uid, photoURL, emailVerified } = user;
-
         if (photoURL === null && emailVerified === false) {
           setUser({
-            displayName,
+            displayName: user.displayName,
             email,
             uid,
           });

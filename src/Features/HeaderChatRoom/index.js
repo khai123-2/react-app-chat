@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./index.module.less";
 import { Avatar, Tooltip, Button } from "antd";
 import {
@@ -6,17 +6,20 @@ import {
   InfoCircleFilled,
   UserAddOutlined,
 } from "@ant-design/icons";
+
 import useFirestore from "../../Hooks/useFirestore";
 import classNames from "classnames/bind";
 import inforChatReducer from "../InforChat/inForChatReducer";
 import modalReducer from "../Modal/ModalReducer";
 import { useDispatch, useSelector } from "react-redux";
-import { changeMembersSelector } from "../../redux/selectors";
+import { membersSelector } from "../../redux/selectors";
+
 const cx = classNames.bind(styles);
 const HeaderChatRoom = ({ room }) => {
   const dispatch = useDispatch();
   const [active, setActive] = useState(false);
-  const changeMembers = useSelector(changeMembersSelector);
+
+  const members = useSelector(membersSelector);
   const handleInviteMember = () => {
     dispatch(modalReducer.actions.setIsInviteMemberVisible(true));
   };
@@ -42,10 +45,11 @@ const HeaderChatRoom = ({ room }) => {
     return {
       fieldName: "uid",
       operator: "in",
-      compareValue: room.members,
+      compareValue: members,
     };
-  }, [room.members]);
-  const members = useFirestore("users", membersCondition);
+  }, [members]);
+
+  const membersRoom = useFirestore("users", membersCondition);
   return (
     <>
       <div className={cx("header-infor")}>
@@ -57,7 +61,7 @@ const HeaderChatRoom = ({ room }) => {
         <div className={cx("title")}>
           <p className={cx("name")}>{room.roomName}</p>
           <Avatar.Group size="small" maxCount={2}>
-            {members.map((member) => (
+            {membersRoom.map((member) => (
               <Tooltip title={member.displayName} key={member.uid}>
                 <Avatar src={member.photoURL}>
                   {member.photoURL
@@ -69,8 +73,8 @@ const HeaderChatRoom = ({ room }) => {
           </Avatar.Group>
         </div>
       </div>
-      <div className={cx("button-group")} onClick={handleSelectInforChat}>
-        <Tooltip title="add friends">
+      <div className={cx("button-group")}>
+        <Tooltip title="Thêm bạn vào nhóm">
           <Button
             type="text"
             icon={<UserAddOutlined />}
@@ -78,9 +82,15 @@ const HeaderChatRoom = ({ room }) => {
           />
         </Tooltip>
         {active ? (
-          <InfoCircleFilled style={{ fontSize: "20px", cursor: "pointer" }} />
+          <InfoCircleFilled
+            style={{ fontSize: "20px", cursor: "pointer" }}
+            onClick={handleSelectInforChat}
+          />
         ) : (
-          <InfoCircleOutlined style={{ fontSize: "20px", cursor: "pointer" }} />
+          <InfoCircleOutlined
+            style={{ fontSize: "20px", cursor: "pointer" }}
+            onClick={handleSelectInforChat}
+          />
         )}
       </div>
     </>

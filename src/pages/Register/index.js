@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form, Input, Space, Typography } from "antd";
+import { Button, Form, Input, Space, Typography, Alert } from "antd";
 import { auth } from "../../firebase/config";
 import {
   signInWithPopup,
@@ -8,6 +8,7 @@ import {
   getAdditionalUserInfo,
   createUserWithEmailAndPassword,
   updateProfile,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
@@ -25,38 +26,54 @@ const fbProvider = new FacebookAuthProvider();
 const googleProvider = new GoogleAuthProvider();
 const cx = classNames.bind(styles);
 
+const LoginMessage = ({ content }) => (
+  <Alert
+    style={{
+      marginBottom: 24,
+    }}
+    message={content}
+    type="error"
+    showIcon
+  />
+);
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [error, SetError] = useState(false);
   const onSubmit = async ({ email, password, displayName }) => {
     setLoading(true);
-    try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      setDocument(
-        "users",
-        {
-          displayName,
-          email,
-          photoURL: null,
-          uid: user.uid,
-          providerId: "email/password",
-          listFriend: [],
-          keywords: generateKeywords(displayName?.toLowerCase()),
-          isOnline: true,
-        },
-        user.uid
-      );
-      await updateProfile(auth.currentUser, {
-        displayName,
-        photoURL: null,
-      });
-    } catch (error) {
-      alert("error,", error);
-    }
+    await fetchSignInMethodsForEmail(auth, email)
+      .then(async (methods) => {
+        if (methods.length !== 0) {
+          SetError(true);
+        } else {
+          const { user } = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          await updateProfile(user, {
+            displayName,
+            photoURL: null,
+          });
+
+          await setDocument(
+            "users",
+            {
+              displayName,
+              email,
+              photoURL: null,
+              uid: user.uid,
+              providerId: "email/password",
+              listFriend: [],
+              keywords: generateKeywords(displayName?.toLowerCase()),
+              isOnline: true,
+            },
+            user.uid
+          );
+        }
+      })
+      .catch((err) => console.log(err));
     setLoading(false);
   };
   const handleLogin = async (provider) => {
@@ -101,26 +118,27 @@ const Register = () => {
               />
             </div>
             <div className={cx("desc")}>
-              <Typography.Title level={3}>Register Account</Typography.Title>
-              Get your free Doot account now.
+              <Typography.Title level={3}>Đăng ký tài khoản</Typography.Title>
+              Nhận tài khoản miễn phí của bạn ngay bây giờ.
             </div>
           </div>
           <div className={cx("main")}>
+            {error && <LoginMessage content="Email này đã có người sử dụng" />}
             <Form name="control-ref" form={form} onFinish={onSubmit}>
               <Form.Item
                 name="displayName"
                 rules={[
                   {
                     whitespace: true,
-                    message: "The display name cannot be empty",
+                    message: "Tên hiển thị không được để trống",
                   },
                   {
                     required: true,
-                    message: "Please input your name",
+                    message: "Vui lòng nhập tên hiển thị",
                   },
                   {
                     min: 6,
-                    message: "The display name at least 6 character",
+                    message: "Tên hiện thỉ tối thiểu 6 ký tự",
                   },
                 ]}
                 hasFeedback
@@ -128,7 +146,7 @@ const Register = () => {
                 <Input
                   size="large"
                   type="text"
-                  placeholder="Display name"
+                  placeholder="Tên hiển thị"
                   prefix={
                     <UserOutlined
                       style={{
@@ -143,11 +161,11 @@ const Register = () => {
                 rules={[
                   {
                     type: "email",
-                    message: "The input is not valid E-mail!",
+                    message: "Email không hợp lệ",
                   },
                   {
                     required: true,
-                    message: "Please input email",
+                    message: "Vui lòng nhập email",
                   },
                 ]}
                 hasFeedback
@@ -172,11 +190,11 @@ const Register = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input password",
+                    message: "Vui lòng nhập mật khẩu",
                   },
                   {
                     whitespace: true,
-                    message: "Password cannot be empty",
+                    message: "Mật khẩu không được để trống",
                   },
                   {
                     min: 6,
@@ -186,7 +204,7 @@ const Register = () => {
                         ? Promise.resolve()
                         : Promise.reject(
                             new Error(
-                              "Password at least 6 characters which contain at least one numeric digit, one uppercase and one lowercase letter"
+                              "Mật khẩu có ít nhất 6 ký tự trong đó có ít nhất một chữ số, một chữ hoa và một chữ thường"
                             )
                           ),
                   },
@@ -195,7 +213,7 @@ const Register = () => {
                 <Input.Password
                   size="large"
                   type="password"
-                  placeholder="Password"
+                  placeholder="Mật khẩu"
                   prefix={
                     <LockOutlined
                       style={{
@@ -212,7 +230,7 @@ const Register = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input comfirm password",
+                    message: "Vui lòng nhập xác nhận mật khẩu",
                   },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
@@ -220,9 +238,7 @@ const Register = () => {
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error(
-                          "The two passwords that you entered do not match!"
-                        )
+                        new Error("Hai mật khẩu bạn đã nhập không khớp")
                       );
                     },
                   }),
@@ -231,7 +247,7 @@ const Register = () => {
                 <Input.Password
                   size="large"
                   type="password"
-                  placeholder="Comfirm password"
+                  placeholder="Xác nhận mật khẩu"
                   prefix={
                     <LockOutlined
                       style={{
@@ -249,14 +265,14 @@ const Register = () => {
                   htmlType="submit"
                   disabled={loading}
                 >
-                  Register
+                  Đăng ký
                 </Button>
               </Form.Item>
             </Form>
 
             <div className={cx("group-login")}>
               <Space>
-                Login with:
+                Đăng nhập bằng:
                 <FacebookOutlined
                   title="Facebook"
                   className={styles.icon}
@@ -271,12 +287,12 @@ const Register = () => {
             </div>
             <div className={cx("text-muted")}>
               <p>
-                Already have an account ?{" "}
+                Bạn đã có tài khoản ?{" "}
                 <Link
                   style={{ fontWeight: "600", fontSize: "15px" }}
                   to="/login"
                 >
-                  Login
+                  Đăng nhập
                 </Link>
               </p>
             </div>

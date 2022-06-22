@@ -7,10 +7,14 @@ const inforChatReducer = createSlice({
       colChatView: 24,
       isDisplay: "none",
     },
+    roomId: "",
   },
   reducers: {
     setSelectedInforChat: (state, action) => {
       state.colInforChat = action.payload;
+    },
+    setRoomId: (state, action) => {
+      state.roomId = action.payload;
     },
   },
 });

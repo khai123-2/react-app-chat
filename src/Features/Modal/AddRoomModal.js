@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Modal, Form, Input, Avatar } from "antd";
+import { Modal, Form, Input, Avatar, Button } from "antd";
 import { isAddroomVisibleSelector } from "../../redux/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import modalReducer from "./ModalReducer";
@@ -94,6 +94,14 @@ const AddRoomModal = () => {
         onCancel={handleCancel}
         onOk={handleOk}
         title="Tạo nhóm"
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            Hủy
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleOk}>
+            Tạo nhóm
+          </Button>,
+        ]}
       >
         <Form form={form} layout="vertical">
           <div className={cx("avatar-div")}>

@@ -60,7 +60,7 @@ const UserInfor = ({ user }) => {
               )}
             />
           </Panel>
-          <Panel header="bao mat" key="settings"></Panel>
+          <Panel header="Hỗ trợ" key="settings"></Panel>
         </Collapse>
       </div>
     </div>

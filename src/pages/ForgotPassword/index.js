@@ -1,45 +1,70 @@
 import React, { useState } from "react";
-import { Button, Form, Input, Space, Typography } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Space,
+  Typography,
+  Alert,
+  notification,
+} from "antd";
 import { auth } from "../../firebase/config";
-import { useNavigate } from "react-router-dom";
 import {
   signInWithPopup,
   FacebookAuthProvider,
   GoogleAuthProvider,
   getAdditionalUserInfo,
-  signInWithEmailAndPassword,
+  fetchSignInMethodsForEmail,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
 import {
-  UserOutlined,
-  LockOutlined,
   FacebookOutlined,
   GoogleOutlined,
+  MailOutlined,
 } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 import { setDocument, updateDocument } from "../../firebase/service";
 import { generateKeywords } from "../../firebase/service";
-import { Link } from "react-router-dom";
+
 const fbProvider = new FacebookAuthProvider();
 const googleProvider = new GoogleAuthProvider();
 const cx = classNames.bind(styles);
 
-const Login = () => {
+const LoginMessage = ({ content }) => (
+  <Alert
+    style={{
+      marginBottom: 24,
+    }}
+    message={content}
+    type="error"
+    showIcon
+  />
+);
+const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
-  const onLogin = async ({ email, password }) => {
+  const [form] = Form.useForm();
+  const [error, SetError] = useState(false);
+
+  const onSubmit = async ({ email }) => {
     setLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      await updateDocument(
-        "users",
-        {
-          isOnline: true,
-        },
-        auth.currentUser.uid
-      );
-    } catch (error) {
-      console.log(error);
-    }
+    await fetchSignInMethodsForEmail(auth, email)
+      .then(async (methods) => {
+        if (methods.length !== 0 && methods.includes("password")) {
+          SetError(false);
+          await sendPasswordResetEmail(auth, email);
+          notification.success({
+            message: "Gửi yêu cầu reset password thành công",
+            description: "Vui lòng kiểm tra email",
+          });
+
+          return;
+        }
+        SetError(true);
+      })
+      .catch((err) => console.log(err));
+
     setLoading(false);
   };
   const handleLogin = async (provider) => {
@@ -84,62 +109,38 @@ const Login = () => {
               />
             </div>
             <div className={cx("desc")}>
-              <Typography.Title level={3}>Welcome back !</Typography.Title>
-              Đăng nhập để tiếp tục
+              <Typography.Title level={3}>Reset mật khẩu</Typography.Title>
             </div>
           </div>
           <div className={cx("main")}>
-            <Form name="control-ref" onFinish={onLogin}>
+            {error && <LoginMessage content="Tài khoản không tồn tại" />}
+            <Form name="control-ref" form={form} onFinish={onSubmit}>
               <Form.Item
                 name="email"
                 rules={[
                   {
+                    type: "email",
+                    message: "Email không hợp lệ",
+                  },
+                  {
                     required: true,
                     message: "Vui lòng nhập email",
                   },
-                  {
-                    type: "email",
-                    message: "Email không hợp lệ!",
-                  },
                 ]}
+                hasFeedback
               >
                 <Input
                   size="large"
                   type="email"
                   placeholder="Email"
                   prefix={
-                    <UserOutlined
+                    <MailOutlined
                       style={{
                         color: "#4eac6d",
                       }}
                     />
                   }
                 />
-              </Form.Item>
-              <Form.Item
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mật khẩu",
-                  },
-                ]}
-              >
-                <Input.Password
-                  size="large"
-                  type="password"
-                  placeholder="Mật khẩu"
-                  prefix={
-                    <LockOutlined
-                      style={{
-                        color: "#4eac6d",
-                      }}
-                    />
-                  }
-                />
-              </Form.Item>
-              <Form.Item>
-                <Link to="/forgotpassword">Quên mật khẩu ?</Link>
               </Form.Item>
               <Form.Item>
                 <Button
@@ -149,7 +150,7 @@ const Login = () => {
                   htmlType="submit"
                   disabled={loading}
                 >
-                  Đăng nhập
+                  Gửi
                 </Button>
               </Form.Item>
             </Form>
@@ -171,12 +172,12 @@ const Login = () => {
             </div>
             <div className={cx("text-muted")}>
               <p>
-                Bạn chưa có tài khoản ?{" "}
+                Bạn đã có tài khoản ?{" "}
                 <Link
                   style={{ fontWeight: "600", fontSize: "15px" }}
-                  to="/register"
+                  to="/login"
                 >
-                  Đăng ký
+                  Đăng nhập
                 </Link>
               </p>
             </div>
@@ -187,4 +188,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

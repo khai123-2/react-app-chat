@@ -12,6 +12,8 @@ import InviteMemberModal from "./Features/Modal/InviteMemberModal";
 import Register from "./pages/Register";
 import PrivateRoute from "./components/PrivateRoute";
 import VerifyEmail from "./pages/VerifyEmail";
+import ForgotPassword from "./pages/ForgotPassword";
+import LeaveRoom from "./Features/Modal/LeaveRoom";
 function App() {
   return (
     <BrowserRouter>
@@ -36,11 +38,13 @@ function App() {
             />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
           <AddFriend />
           <AddRoomModal />
           <EditProFile />
           <InviteMemberModal />
+          <LeaveRoom />
         </Provider>
       </AuthProvider>
     </BrowserRouter>

@@ -24,10 +24,10 @@ const MenuSettingData = ({ handleOpenProfile }) => {
         icon={<UserOutlined />}
         onClick={handleOpenProfile}
       >
-        Account
+        Thông tin tài khoản
       </Menu.Item>
       <Menu.Item onClick={handleSignout} key="6" title={false}>
-        <p style={{ color: "red", textAlign: "center" }}>Sign out</p>
+        <p style={{ color: "red", textAlign: "center" }}>Đăng xuất</p>
       </Menu.Item>
     </Menu>
   );

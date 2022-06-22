@@ -4,7 +4,7 @@ import {
   UserAddOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons";
-import { Input, Button, Form } from "antd";
+import { Input, Button, Form, Tooltip } from "antd";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
 import { tabSelector } from "../../redux/selectors";
@@ -117,25 +117,29 @@ const RightChatd = () => {
           className={cx("button-group")}
           id={visible ? styles.disappear : undefined}
         >
-          <Button
-            onClick={handleAddfriend}
-            shape="circle"
-            icon={<UserAddOutlined />}
-            type="text"
-          />
-          <Button
-            onClick={handleAddRoom}
-            shape="circle"
-            icon={<UsergroupAddOutlined />}
-            type="text"
-          />
+          <Tooltip title="Thêm bạn">
+            <Button
+              onClick={handleAddfriend}
+              shape="circle"
+              icon={<UserAddOutlined />}
+              type="text"
+            />
+          </Tooltip>
+          <Tooltip title="Tạo nhóm">
+            <Button
+              onClick={handleAddRoom}
+              shape="circle"
+              icon={<UsergroupAddOutlined />}
+              type="text"
+            />
+          </Tooltip>
         </div>
         <div
           className={cx("close-button")}
           id={visible ? styles.appear : undefined}
         >
           <Button type="text" size="small" shape="circle" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
         </div>
       </div>

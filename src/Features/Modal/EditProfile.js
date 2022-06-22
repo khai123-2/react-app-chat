@@ -5,19 +5,20 @@ import { isEditProfileVisibleSelector } from "../../redux/selectors";
 import modalReducer from "./ModalReducer";
 import styles from "./index.module.less";
 import classNames from "classnames/bind";
-import { Form, Input, Avatar, Upload, message } from "antd";
+import { Form, Input, Avatar } from "antd";
 import Camera from "../../components/svg/Camera";
 import { storage, db } from "../../firebase/config";
+import { auth } from "../../firebase/config";
 import {
   ref,
   getDownloadURL,
   uploadBytes,
   deleteObject,
 } from "firebase/storage";
-import { InboxOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../Context/AuthProvider";
-import { getDoc, doc, updateDoc, setDoc } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import Delete from "../../components/svg/Delete";
+const fromDb = undefined;
 const cx = classNames.bind(styles);
 
 const EditProFile = () => {
@@ -26,19 +27,24 @@ const EditProFile = () => {
   const [img, setImg] = useState(null);
   const dispatch = useDispatch();
   const isEditProfileVisible = useSelector(isEditProfileVisibleSelector);
-  const handleChangeImg = (e) => {
-    setImg(e.target.files[0]);
-    dispatch(modalReducer.actions.setChangeImg(img));
-  };
+
   useEffect(() => {
-    if (user.uid) {
+    if (Object.keys(user).length !== 0) {
       getDoc(doc(db, "users", user.uid)).then((docSnap) => {
         if (docSnap.exists) {
           setCurrentUser(docSnap.data());
         }
       });
     }
-  }, [img]);
+  }, [user, img]);
+  const reset = (e) => {
+    const obj = fromDb || {};
+    obj.value = "";
+    e.target.value = obj.value;
+  };
+  const handleChangeImg = (e) => {
+    setImg(e.target.files[0]);
+  };
   const handleOk = async () => {
     if (img) {
       const uploadImg = async () => {
@@ -96,15 +102,15 @@ const EditProFile = () => {
       className={cx("modal")}
       width="400px"
       visible={isEditProfileVisible}
-      title="Edit Profile"
+      title="Thông tin tài khoản"
       onCancel={handleCancel}
       onOk={handleOk}
       footer={[
         <Button key="back" onClick={handleCancel}>
-          Cancel
+          Hủy
         </Button>,
         <Button key="submit" type="primary" onClick={handleOk}>
-          Edit
+          Cập nhật
         </Button>,
       ]}
     >
@@ -141,18 +147,18 @@ const EditProFile = () => {
                 style={{ display: "none" }}
                 id="photoUser"
                 onChange={handleChangeImg}
-                onClick={(e) => (e.target.value = "")}
+                onClick={reset}
               />
             </div>
           </div>
         </div>
 
         <Form layout="vertical" style={{ padding: "0 14px" }}>
-          <Form.Item label="Your Name">
-            <Input disabled value={currentUser.displayName} />
+          <Form.Item label="Họ tên">
+            <Input disabled value={currentUser?.displayName} />
           </Form.Item>
           <Form.Item label="Email">
-            <Input disabled value={currentUser.email} />
+            <Input disabled value={currentUser?.email} />
           </Form.Item>
         </Form>
       </div>

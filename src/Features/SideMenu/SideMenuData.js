@@ -9,30 +9,21 @@ import {
 } from "@ant-design/icons";
 export const SideMenutopData = [
   {
-    title: "Chats",
+    title: "Tin nhắn",
     iconOutlined: <MessageOutlined />,
     iconFilled: <MessageFilled />,
     tab: "chats",
   },
   {
-    title: "Contacts",
+    title: "Danh bạ",
     iconOutlined: <ContactsOutlined />,
     iconFilled: <ContactsFilled />,
     tab: "contacts",
   },
   {
-    title: "Notifications",
+    title: "Thông báo",
     iconOutlined: <BellOutlined />,
     iconFilled: <BellFilled />,
     tab: "notifications",
-  },
-];
-
-export const SideMenuBotData = [
-  {
-    title: "Languages",
-    iconOutlined: <GlobalOutlined />,
-    iconFilled: <GlobalOutlined />,
-    tab: "languages",
   },
 ];

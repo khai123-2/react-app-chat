@@ -5,6 +5,7 @@ const chatItemReducer = createSlice({
   initialState: {
     conversation: {},
     room: "",
+    members: [],
   },
   reducers: {
     selectedConversation: (state, action) => {
@@ -12,6 +13,9 @@ const chatItemReducer = createSlice({
     },
     selectedRoom: (state, action) => {
       state.room = action.payload;
+    },
+    setMembers: (state, action) => {
+      state.members = action.payload;
     },
   },
 });

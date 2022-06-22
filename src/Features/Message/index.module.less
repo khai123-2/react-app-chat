@@ -6,6 +6,7 @@
   padding: 0 16px;
   margin-bottom: 12px;
   .wrapperMessage {
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -13,7 +14,7 @@
     padding: 12px;
     min-width: 32px;
     max-width: 100% -38px;
-    background-color: #f5f7fb;
+
     border-radius: 8px;
     .author {
       font-size: 13px;
@@ -24,6 +25,47 @@
       font-size: 11px;
       color: #a7a7a7;
       margin-top: 10px;
+    }
+
+    .messagesCard {
+      border: solid #4eac6d;
+      border-width: 1px 1px;
+      margin-bottom: 5px;
+      border-radius: 3px;
+      padding: 16px;
+      width: 376px;
+
+      .icon {
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        width: 40px;
+        height: 32px;
+        margin-right: 16px;
+        background-color: #a9d5bf;
+        justify-content: center;
+        border-radius: 50%;
+        color: #ffff;
+      }
+
+      .messagesContainer {
+        display: flex;
+        align-items: center;
+
+        .messagesContent {
+          width: 100%;
+          overflow: hidden;
+          .fileName {
+            font-size: 13px;
+            margin-bottom: 5px;
+            overflow: hidden;
+            line-height: normal;
+            font-weight: 500;
+            letter-spacing: normal;
+            display: flex;
+          }
+        }
+      }
     }
   }
 }
@@ -52,4 +94,12 @@
 }
 .right {
   flex-direction: row-reverse;
+}
+
+.me {
+  background-color: #c5e1d3;
+}
+
+.friend {
+  background-color: #f5f7fb;
 }

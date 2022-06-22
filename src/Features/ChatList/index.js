@@ -64,6 +64,7 @@ const ListMessages = () => {
       }
 
       dispatch(chatItemReducer.actions.selectedRoom(conversation));
+      dispatch(chatItemReducer.actions.setMembers(conversation.members));
     }
     dispatch(chatItemReducer.actions.selectedConversation(conversation));
   };

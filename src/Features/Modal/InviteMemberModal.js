@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   isInviteMemberVisibleSelector,
   selectedRoomSelector,
-  changeMembersSelector,
 } from "../../redux/selectors";
 import modalReducer from "./ModalReducer";
+import chatItemReducer from "../ChatItem/chatItemReducer";
 import {
   query,
   where,
@@ -99,7 +99,6 @@ export default function InviteMemberModal() {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const isInviteMemberVisible = useSelector(isInviteMemberVisibleSelector);
-  const changeMembers = useSelector(changeMembersSelector);
   const selectedRoom = useSelector(selectedRoomSelector);
   const { user } = useContext(AuthContext);
 
@@ -118,14 +117,14 @@ export default function InviteMemberModal() {
     // reset form value
     form.resetFields();
     setValue([]);
-
-    // update members in current room
-    // const roomRef = db.collection("rooms").doc(selectedRoomId);
-
     await updateDoc(doc(db, "rooms", selectedRoom.id), {
       members: [...selectedRoom.members, ...value.map((val) => val.value)],
     });
-    dispatch(modalReducer.actions.setChangeMembers(!changeMembers));
+    const updateMembers = [
+      ...selectedRoom.members,
+      ...value.map((val) => val.value),
+    ];
+    dispatch(chatItemReducer.actions.setMembers(updateMembers));
     dispatch(modalReducer.actions.setIsInviteMemberVisible(false));
   };
 

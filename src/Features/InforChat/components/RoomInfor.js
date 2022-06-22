@@ -2,19 +2,30 @@ import React from "react";
 import styles from "../index.module.less";
 import classNames from "classnames/bind";
 import { Avatar, Typography, Collapse, List } from "antd";
+import { LogoutOutlined } from "@ant-design/icons";
 import useFirestore from "../../../Hooks/useFirestore";
+import modalReducer from "../../Modal/ModalReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { membersSelector } from "../../../redux/selectors";
+import inforCharReducer from "../inForChatReducer";
 const { Panel } = Collapse;
 const cx = classNames.bind(styles);
 const RoomInfor = ({ room }) => {
-  const memberCount = room.members.length;
+  const dispatch = useDispatch();
+  const members = useSelector(membersSelector);
+  const memberCount = members.length;
   const usersCondition = React.useMemo(() => {
     return {
       fieldName: "uid",
       operator: "in",
-      compareValue: room.members,
+      compareValue: members,
     };
-  }, [room.members]);
-  const members = useFirestore("users", usersCondition);
+  }, [members]);
+  const handleOpenLeaveRoom = (roomId) => {
+    dispatch(modalReducer.actions.setIsLeaveRoomVisible(true));
+    dispatch(inforCharReducer.actions.setRoomId(roomId));
+  };
+  const membersRoom = useFirestore("users", usersCondition);
   return (
     <div className={cx("container")}>
       <div className={cx("header-infor")}>
@@ -32,7 +43,7 @@ const RoomInfor = ({ room }) => {
           <Panel header={`Danh sách thành viên (${memberCount})`} key="room">
             <List
               itemLayout="horizontal"
-              dataSource={members}
+              dataSource={membersRoom}
               renderItem={(item) => (
                 <List.Item>
                   <List.Item.Meta
@@ -54,7 +65,18 @@ const RoomInfor = ({ room }) => {
               )}
             />
           </Panel>
-          <Panel header="Hỗ trợ" key="settings"></Panel>
+          <Panel header="Hỗ trợ" key="settings">
+            <div
+              className={cx("options-item")}
+              onClick={() => handleOpenLeaveRoom(room.id)}
+            >
+              {" "}
+              <LogoutOutlined style={{ color: "#ff4d4f" }} />
+              <Typography.Text style={{ marginLeft: "5px" }} type="danger">
+                Rời nhóm
+              </Typography.Text>
+            </div>
+          </Panel>
         </Collapse>
       </div>
     </div>
