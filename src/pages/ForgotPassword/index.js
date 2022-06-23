@@ -105,7 +105,7 @@ const ForgotPassword = () => {
               <img
                 alt="logo"
                 className={cx("logo")}
-                src="https://brademar.com/wp-content/uploads/2022/05/Line-Logo-PNG-2016-%E2%80%93-Now-1.png"
+                src="https://logos-download.com/wp-content/uploads/2017/01/WeChat_logo_icon.png"
               />
             </div>
             <div className={cx("desc")}>

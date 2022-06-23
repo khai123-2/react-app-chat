@@ -18,8 +18,8 @@ import {
 import { db, storage } from "../../firebase/config";
 import Message from "../../Features/Message";
 import styles from "./index.module.less";
-import { Button, Tooltip, Form, Input, message, Progress } from "antd";
-import { SmileOutlined, SendOutlined } from "@ant-design/icons";
+import { Button, Tooltip, Form, Input } from "antd";
+import { SendOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { selectedConversSelector } from "../../redux/selectors";
 import { AuthContext } from "../../Context/AuthProvider";
@@ -40,8 +40,20 @@ const ChatView = () => {
   const [inputValue, setInputValue] = useState("");
   const [msgs, setMsgs] = useState([]);
   const [userCurrent, setUserCurrent] = useState({});
-  const [progress, setProgress] = useState(0);
+
   const dispatch = useDispatch();
+
+  function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return "0 Bytes";
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  }
   const {
     user: { uid, displayName },
   } = useContext(AuthContext);
@@ -63,32 +75,27 @@ const ChatView = () => {
       }
     });
   }, [msgs]);
+
   const handleFileUpload = async (e) => {
     const files = [];
     const fileNames = [];
+    const fileSizes = [];
     for (let i = 0; i < e.target.files.length; i++) {
       const newFile = e.target.files[i];
       newFile["id"] = Math.random();
       files.push(newFile);
       fileNames.push(newFile.name);
+      fileSizes.push(formatBytes(newFile.size));
     }
+
     const promises = [];
     files.forEach((image) => {
       const storageRef = ref(storage, `files/${image.id} - ${image.name}`);
       const uploadTask = uploadBytesResumable(storageRef, image);
       promises.push(uploadTask);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setProgress(progress);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+      uploadTask.on("state_changed", (error) => {
+        console.log(error);
+      });
     });
 
     Promise.all(promises)
@@ -103,7 +110,7 @@ const ChatView = () => {
       })
       .then((urls) => {
         const files = urls.map((url, i) => {
-          return { name: fileNames[i], url };
+          return { name: fileNames[i], url, size: fileSizes[i] };
         });
         if (selectedConvers.uid) {
           const id =
@@ -157,7 +164,6 @@ const ChatView = () => {
             selectedConvers.roomId
           );
         }
-        setProgress(0);
       })
       .catch((err) => console.log(err));
   };
@@ -169,22 +175,14 @@ const ChatView = () => {
       imgs.push(newImage);
     }
     const promises = [];
+
     imgs.forEach((image) => {
       const storageRef = ref(storage, `images/${image.id} - ${image.name}`);
       const uploadTask = uploadBytesResumable(storageRef, image);
       promises.push(uploadTask);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setProgress(progress);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+      uploadTask.on("state_changed", (error) => {
+        console.log(error);
+      });
     });
 
     Promise.all(promises)
@@ -249,7 +247,6 @@ const ChatView = () => {
             selectedConvers.roomId
           );
         }
-        setProgress(0);
       })
       .catch((err) => console.log(err));
   };
@@ -424,9 +421,6 @@ const ChatView = () => {
                     />
                   </Form.Item>
                   <div>
-                    <Tooltip title="Send image">
-                      <Button type="text" icon={<SmileOutlined />} />
-                    </Tooltip>
                     <Button
                       onClick={handleOnSubmit}
                       size="large"

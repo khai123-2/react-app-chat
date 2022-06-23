@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Alert, Empty, Avatar, Button } from "antd";
+import { Modal, Form, Input, Empty, Avatar, Button } from "antd";
 import { isInviteUserVisibleSelector } from "../../redux/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import modalReducer from "./ModalReducer";
@@ -133,7 +133,7 @@ const InviteUsersModal = () => {
                       ghost
                       onClick={() => handleSendRequest(item)}
                     >
-                      Add friend
+                      Kết bạn
                     </Button>
                   ) : (
                     <div></div>

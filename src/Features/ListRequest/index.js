@@ -59,14 +59,14 @@ const FriendRequestBox = ({ userSendRequest }) => {
                   type="primary"
                   size="small"
                 >
-                  Comfrim
+                  Chấp nhận
                 </Button>,
                 <Button
                   onClick={() => handleReject(item.uid)}
                   type="danger"
                   size="small"
                 >
-                  Reject
+                  Từ chối
                 </Button>,
               ]}
             >

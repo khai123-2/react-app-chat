@@ -5,7 +5,6 @@ import {
   MessageFilled,
   ContactsFilled,
   BellFilled,
-  GlobalOutlined,
 } from "@ant-design/icons";
 export const SideMenutopData = [
   {

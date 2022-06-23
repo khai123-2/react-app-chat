@@ -17,6 +17,7 @@ import { Avatar } from "antd";
 import { query, where, collection, getDocs } from "firebase/firestore";
 import { AuthContext } from "../../Context/AuthProvider";
 import { db } from "../../firebase/config";
+import Contacts from "../Contacts";
 const cx = classNames.bind(styles);
 
 const RightChatd = () => {
@@ -39,7 +40,7 @@ const RightChatd = () => {
       case "chats":
         return <ListMessages />;
       case "contacts":
-        return <h1>condtacts</h1>;
+        return <Contacts />;
       case "notifications":
         return <Notification />;
       default:

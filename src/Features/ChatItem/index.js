@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import styles from "./index.module.less";
 import { AuthContext } from "../../Context/AuthProvider";
-import {
-  onSnapshot,
-  doc,
-  updateDoc,
-  collectionGroup,
-} from "firebase/firestore";
+import { onSnapshot, doc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import classNames from "classnames/bind";
 import { Avatar } from "antd";

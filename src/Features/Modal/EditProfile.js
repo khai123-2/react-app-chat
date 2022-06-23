@@ -8,7 +8,6 @@ import classNames from "classnames/bind";
 import { Form, Input, Avatar } from "antd";
 import Camera from "../../components/svg/Camera";
 import { storage, db } from "../../firebase/config";
-import { auth } from "../../firebase/config";
 import {
   ref,
   getDownloadURL,

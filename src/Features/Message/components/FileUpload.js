@@ -1,11 +1,10 @@
-import React, { useContext, useRef, useEffect, useState } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import styles from "../index.module.less";
 import { Avatar, Typography, Button } from "antd";
 import { DownloadOutlined, PaperClipOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../../Context/AuthProvider";
-import FileDownload from "js-file-download";
 import { formatRelative } from "date-fns/esm";
-import Axios from "axios";
+import { saveAs } from "file-saver";
 const FileUpload = ({ msg, prevMess }) => {
   const scrollRef = useRef();
   useEffect(() => {
@@ -25,19 +24,9 @@ const FileUpload = ({ msg, prevMess }) => {
 
     return formattedDate;
   }
-  // const handleDownloadFile = (name, url) => {
-  //   Axios({
-  //     url: "https://firebasestorage.googleapis.com/v0/b/chat-app-demo-1315c.appspot.com/o/images%2F0.30811957852256566%20-%20download.jpeg?alt=media&token=41b99c02-d63e-4ace-9ee4-99a78c2be2da",
-  //     method: "GET",
-  //     headers: {
-  //       "Access-Control-Allow-Origin": "*",
-  //       // "Content-Type": "application/json",
-  //     },
-  //     responseType: "blob",
-  //   }).then((res) => {
-  //     FileDownload(res.data, name);
-  //   });
-  // };
+  const handleDownloadFile = (url) => {
+    saveAs(url);
+  };
   return (
     <div
       className={`${styles.conversation} ${
@@ -72,18 +61,16 @@ const FileUpload = ({ msg, prevMess }) => {
                     {file.name}
                   </Typography.Text>
                   <Typography.Text className={styles.author}>
-                    160MB
+                    {file.size}
                   </Typography.Text>
                 </div>
-                <a href={file.url} download>
-                  <Button
-                    type="link"
-                    shape="circle"
-                    icon={<DownloadOutlined />}
-                    size={24}
-                    // onClick={() => handleDownloadFile(file.name, file.url)}
-                  />
-                </a>
+                <Button
+                  type="link"
+                  shape="circle"
+                  icon={<DownloadOutlined />}
+                  size={24}
+                  onClick={() => handleDownloadFile(file.url)}
+                />
               </div>
             </div>
           );

@@ -42,7 +42,7 @@ const ImageUpload = ({ msg, prevMess }) => {
           >
             <Row gutter={[8, 8]}>
               {msg.imgs.map((photoURL, i) => (
-                <Col span={8}>
+                <Col span={8} key={i}>
                   <Image
                     key={i}
                     className={styles.customImage}

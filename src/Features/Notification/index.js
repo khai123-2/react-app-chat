@@ -35,7 +35,7 @@ const Notification = () => {
   return (
     <div className="listNotification">
       <Collapse ghost defaultActiveKey={["1"]} className={styles.panelCustom}>
-        <Panel header="Thông báo" key="1">
+        <Panel header="Lời mời kết bạn" key="1">
           <ListRequest userSendRequest={userSendRequest} />
         </Panel>
       </Collapse>
