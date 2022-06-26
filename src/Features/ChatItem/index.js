@@ -20,20 +20,12 @@ const ChatItem = ({ data, handleSelectedUser, conversation }) => {
           ? `${user.uid + data.uid}`
           : `${data.uid + user.uid}`;
       unsub = onSnapshot(doc(db, "lastMsg", id), (doc) => {
-        if (doc.data().id.includes(conversation.id)) {
-          setLastMess({ ...doc.data(), unread: false });
-          return;
-        }
         setLastMess(doc.data());
         return;
       });
     }
     if (data.roomId) {
       unsub = onSnapshot(doc(db, "lastMsg", data.roomId), (doc) => {
-        if (doc.data().id === conversation.id) {
-          setLastMess({ ...doc.data(), unread: false });
-          return;
-        }
         setLastMess(doc.data());
         return;
       });
