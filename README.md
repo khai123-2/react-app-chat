@@ -1,5 +1,5 @@
 # Getting Started with Web App Chat 
-
+![image](https://user-images.githubusercontent.com/68181891/195155589-d518cda6-757f-4639-976b-5f331dd37927.png)
 
 ### `npm start`
 
