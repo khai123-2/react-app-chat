@@ -1,6 +1,8 @@
 # Getting Started with Web App Chat 
 ![image](https://user-images.githubusercontent.com/68181891/195155951-d7a6bdeb-232d-45ed-9ac8-0c4b8d27cbd8.png)
 
+![image](https://user-images.githubusercontent.com/68181891/195157661-dedeff7a-3cbd-4b99-8c79-cfdccd0c77b9.png)
+
 ### `npm start`
 
 Runs the app in the development mode.\
